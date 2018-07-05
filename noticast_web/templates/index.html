@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="section">
+  <div class="container">
+    <div class="columns">
+{% if g.user is not none %}
+      <div class="column is-narrow">
+        <table class="table">
+          <thead>
+            <tr>
+              <td>Device Name</td>
+              <td>Device ARN</td>
+            </tr>
+          </thead>
+        </table>
+      </div>
+{% endif %}
+      <div class="column">
+        <b>Hello!</b> Welcome to NotiCast - a broadcasting system for sending
+        notifications. Below, you can see some helpful resources:
+        <ul>
+          <li><a href="https://github.com/NotiCast/pylon-example" target="_blank">Pylons</a> - How we (and you!) send notifications to devices.</li>
+          <li>i dunno what else lol</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

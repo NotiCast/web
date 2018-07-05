@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <script src="{{ url_for('static', filename='node_modules/jquery/dist/jquery.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='node_modules/bulma/css/bulma.min.css') }}">
+    <title>NotiCast</title>
+    <style>
+    ul {
+      list-style: disc inside;
+    }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+{% if g.user is not none %}
+        <a class="navbar-item" href="/">NotiCast // {{ g.user.username }}</a>
+{% else %}
+        <a class="navbar-item" href="/">NotiCast</a>
+{% endif %}
+      </div>
+      <div class="navbar-menu">
+        <a class="navbar-item" href="{{ url_for('auth.login') }}">Log In</a>
+        <a class="navbar-item" href="{{ url_for('auth.register') }}">Register</a>
+        <a class="navbar-item" href="{{ url_for('device.register') }}">Add Device</a>
+        <div class="navbar-end">
+          <a class="navbar-item"
+             href="{{ url_for('auth.logout') }}">Log Out</a>
+        </div>
+      </div>
+    </nav>
+    {% block body %}{% endblock %}
+    {% block script %}{% endblock %}
+  </body>
+</html>

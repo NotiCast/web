@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block body %}
+<section class="section">
+  <div class="container">
+    <h1 class="title">Please enter the information below.</h1>
+    <p>
+      This page will pull an ARN from AWS for an already-registered "Thing",
+      rather than creating it's own Thing and TLS certificate and key. This
+      page is not to be relied on and will only exist for the purpose of
+      migrating the already-registered devices to the web database.
+    </p>
+    <div class="column is-narrow" style="width: 300px;">
+      <form action="{{ url_for('device.from_arn') }}" method="post" accept-charset="utf-8">
+        <div class="field">
+          <label class="label">Device ARN</label>
+          <input class="input" type="text" name="device_arn" id="device_arn" value="arn:aws:iot:"/>
+        </div>
+        <div class="field">
+          <div class="control">
+            <input class="button is-link" type="submit">
+            <a class="button" href="{{ url_for('device.register') }}">Register Device</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

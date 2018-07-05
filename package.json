@@ -1,0 +1,13 @@
+{
+  "name": "web",
+  "version": "0.1.0",
+  "description": "NotiCast website",
+  "repository": "https://github.com/NotiCast/web",
+  "author": "RyanSquared <vandor2012@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "bulma": "^0.7.1",
+    "jquery": "^3.3.1",
+    "vue": "^2.5.16"
+  }
+}

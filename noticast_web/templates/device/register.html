@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block body %}
+<section class="section">
+  <div class="container">
+    <h1 class="title">Please enter the information below.</h1>
+    <p>
+      Once you submit your request, we will generate a certificate
+      and private key and associate it with our servers.
+      <!-- ::TODO:: -->
+      Unfortunately, as of this time, we do not support user-generated
+      certificates or keys. However, we plan to support this functionality as
+      soon as possible.  When you have your new cert and key, these should be
+      added to a flash drive with the <code>fat32</code> filesystem, with the
+      filenames listed:
+    </p>
+    <ul>
+      <li>Certificate: <code>cert.crt</code></li>
+      <li>Key: <code>key</code></li>
+    </ul>
+    <p>
+      <!-- ::TODO:: -->
+      Currently there's no way to mount the flash drive so Ryan needs to stop
+      being so lazy and add that. He also needs to move <code>chain.pem</code>
+      as otherwise everything would break without it, given the mount would
+      overrule the file on the filesystem.
+    </p>
+    <div class="column is-narrow" style="width: 300px;">
+      <form action="{{ url_for('device.register') }}" method="post" accept-charset="utf-8">
+        <div class="field">
+          <label class="label">Device Nickname</label>
+          <input class="input" type="text" name="device_name" id="device_name" value="" size="{{ g.device_name_validator.min }}" />
+        </div>
+        <div class="field">
+          <div class="control">
+            <input class="button is-link" type="submit">
+            <a class="button" href="{{ url_for('device.from_arn') }}">Register From ARN</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}
