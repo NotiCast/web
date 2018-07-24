@@ -20,14 +20,8 @@ def unpaginate(method, element_name):
             break
 
 
-class ARN(object):
-    def __init__(self, arn: str):
-        self.arn = arn
-        return self
-
-
 class ThingGroup(object):
-    def __init__(self, arn: ARN, name: str, devices: List = None):
+    def __init__(self, arn: str, name: str, devices: List = None):
         if devices is None:
             devices = []
         self.arn = arn
@@ -40,21 +34,19 @@ class ThingGroup(object):
     def __ne__(lhs, rhs):
         lhs.arn != rhs.arn
 
-    def get(self, key):
-        if key == "thingGroupName":
-            return self.name
-        if key == "thingGroupArn":
-            return self.arn
-        else:
-            raise KeyError(key)
+    def __repr__(self):
+        return "ThingGroup<%r>" % self.arn
 
     @staticmethod
     def try_from_loose(group: dict, things=None):
         if isinstance(group, ThingGroup):
             return group
+        if isinstance(group, str):
+            group = ThingGroup("", group)
+            return group.sync()
         return ThingGroup(group["groupArn"], group["groupName"], things)
 
-    def sync(self, create: bool = False):
+    def sync(self, create: bool = False, remote: bool = False):
         group = None
         # Try to get remote group
         for remote_group in get_groups():
@@ -72,8 +64,12 @@ class ThingGroup(object):
             raise ValueError(self)
 
         # Sync data
-        self.arn = group.arn
-        self.name = group.name
+        if remote:
+            # ::TODO:: set remote name to local name
+            raise NotImplementedError()
+        else:
+            self.arn = group.arn
+            self.name = group.name
 
         group.things = list(get_things_for_group(group))
 
@@ -96,12 +92,15 @@ class ThingGroup(object):
 
 
 class Thing(object):
-    def __init__(self, arn: ARN, name: str, groups: List[ThingGroup]=None):
+    def __init__(self, arn: str, name: str, groups: List[ThingGroup]=None):
         if groups is None:
             groups = []
         self.arn = arn
         self.name = name
         self.groups = groups
+
+    def __repr__(self):
+        return "Thing<%r>" % self.arn
 
     def get(self, key):
         if key == "thingName":
@@ -115,9 +114,13 @@ class Thing(object):
     def try_from_loose(thing, groups=None):
         if isinstance(thing, Thing):
             return thing
+        if isinstance(thing, str):
+            thing = Thing("", thing)
+            thing.sync()
+            return thing
         return Thing(thing["thingArn"], thing["thingName"], groups)
 
-    def sync(self, create: bool = False):
+    def sync(self, create: bool = False, remote: bool = False):
         thing = None
         # Try to get Thing from ARN
         for remote_thing in get_things():
@@ -138,8 +141,12 @@ class Thing(object):
             raise ValueError(self)
 
         # Sync data
-        self.arn = thing.arn
-        self.name = thing.name
+        if remote:
+            # ::TODO:: set remote name to local name
+            raise NotImplementedError()
+        else:
+            self.arn = thing.arn
+            self.name = thing.name
 
         thing.groups = list(get_groups_for_thing(thing))
 
@@ -169,7 +176,7 @@ def get_things_for_group(group: dict) -> Generator[Thing, None, None]:
 
 
 def get_groups_for_thing(thing: dict) -> Generator[ThingGroup, None, None]:
-    thing = Thing.get_from(thing)
+    thing = Thing.try_from_loose(thing)
     part = partial(iot.list_thing_groups_for_thing,
                    thingName=thing.name)
     for group in unpaginate(part, "thingGroups"):
@@ -183,6 +190,6 @@ def get_things() -> Generator[Thing, None, None]:
 
 
 def get_groups() -> Generator[ThingGroup, None, None]:
-    for group in unpaginate(iot.list_groups, "groups"):
+    for group in unpaginate(iot.list_thing_groups, "thingGroups"):
         things = list(get_things_for_group(group))
         yield ThingGroup.try_from_loose(group, things=things)

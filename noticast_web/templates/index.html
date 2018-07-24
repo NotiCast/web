@@ -4,25 +4,68 @@
 <div class="section">
   <div class="container">
     <div class="columns">
-{% if g.user is not none %}
-      <div class="column is-narrow">
+
+{% if g.client_id is not none %}
+      <div class="column">
         <table class="table">
           <thead>
             <tr>
-              <td>Device Name</td>
-              <td>Device ARN</td>
+              <th>Device Name</th>
+              <th>Device ARN</th>
             </tr>
           </thead>
+          <tbody>
+            {% for device in devices %}
+            <tr>
+              <th>{{ device.name }}</th>
+              <td>{{ device.arn }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
         </table>
       </div>
 {% endif %}
+
       <div class="column">
-        <b>Hello!</b> Welcome to NotiCast - a broadcasting system for sending
-        notifications. Below, you can see some helpful resources:
+        <p>
+          <b>Hello!</b> Welcome to NotiCast - a broadcasting system for sending
+          notifications. Below, you can see some helpful resources:
+        </p>
+
         <ul>
           <li><a href="https://github.com/NotiCast/pylon-example" target="_blank">Pylons</a> - How we (and you!) send notifications to devices.</li>
           <li>i dunno what else lol</li>
         </ul>
+
+        <hr>
+
+        <h3 class="title is-3">Enabling your NotiCast Device</h3>
+        <h5 class="title is-5 has-text-info">
+          Skip these steps if you have your flash drive ready to go.
+        </h5>
+        <p>
+          When you receive your NotiCast device, it should already have the
+          software installed. If the device provider has not already provided
+          you with a flash drive containing your authentication credentials,
+          or if you lose this flash drive, you will need to set up a new drive.
+          Assuming you have requested and received credentials from the
+          provider, you can follow the steps below to set up a new flash drive.
+        </p>
+        <hr>
+        <ol>
+          <li>Plug in the flash drive and ensure that the filesystem is fat32</li>
+          <ul>
+            <li>
+              On Windows, you can
+              <a href="https://www.onmsft.com/news/how-to-format-a-storage-drive-in-windows-10" target="_blank">reformat</a>
+              to change filesystem.
+            </li>
+            <li>On MacOS, you can use the "Disk Utility" program to erase and format.</li>
+          </ul>
+          <li>Move the credentials files from the zipped folder to the flashdrive.</li>
+          <li>Boot up your system, and nag at Ryan to make sure it works</li>
+        </ol>
+
       </div>
     </div>
   </div>

@@ -10,10 +10,16 @@
     ul {
       list-style: disc inside;
     }
+    ol {
+      list-style-position: inside;
+    }
+    section.notifications {
+      padding-top: 3.5rem;
+    }
     </style>
   </head>
   <body>
-    <nav class="navbar" role="navigation" aria-label="main navigation">
+    <nav class="navbar has-background-white-ter" role="navigation" aria-label="main navigation">
       <div class="navbar-brand">
 {% if g.user is not none %}
         <a class="navbar-item" href="/">NotiCast // {{ g.user.username }}</a>
@@ -31,6 +37,26 @@
         </div>
       </div>
     </nav>
+{% with messages = get_flashed_messages(category_filter=["error"]) %}
+{% if messages %}
+    <section class="notifications">
+      <div class="container">
+{% for message in messages %}
+        <div class="notification is-danger">
+          <button class="delete"></button>
+          {{ message }}
+        </div>
+{% endfor %}
+      </div>
+    </section>
+{% endif %}
+{% endwith %}
+    <script charset="utf-8">
+      console.log($("button.delete"));
+      $("button.delete").click(function() {
+        $(this).parent("div.notification").remove();
+      });
+    </script>
     {% block body %}{% endblock %}
     {% block script %}{% endblock %}
   </body>

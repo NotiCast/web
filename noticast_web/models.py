@@ -33,6 +33,7 @@ devices2groups = db.Table(
 class Device(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     arn = db.Column(db.String, unique=True, nullable=False)
+    name = db.Column(db.String, unique=False, nullable=False)
     client_id = db.Column(db.Integer, db.ForeignKey("client.id"),
                           nullable=False)
     groups = db.relationship("Group", secondary="devices2groups",

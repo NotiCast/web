@@ -2,7 +2,8 @@ import functools
 
 import spudbucket as sb
 from flask import (
-    Blueprint, g, abort, redirect, render_template, request, session, url_for
+    Blueprint, g, abort, redirect, render_template, request, session, url_for,
+    flash
 )
 from werkzeug import check_password_hash, generate_password_hash
 from .models import User, Client, db
@@ -12,8 +13,8 @@ blueprint = Blueprint("auth", __name__, url_prefix="/auth")
 
 @blueprint.route("/register", methods=("GET", "POST"))
 @sb.validator(sb.v.ExistsValidator("i-am"))
-@sb.validator(sb.v.LengthValidator("username", min=10, max=30))
-@sb.validator(sb.v.LengthValidator("password", min=8))
+@sb.validator(sb.v.LengthValidator("username", min=5, max=30))
+@sb.validator(sb.v.LengthValidator("password", min=7))
 @sb.base
 def register(form):
     if form.is_form_mode():
@@ -49,10 +50,12 @@ def login(form):
         user = User.query.filter(User.username.like(username)).first()
 
         if not check_password_hash(user.password, request.form["password"]):
-            return abort(403)
+            flash("Password incorrect for: %s" % user.username, "error")
+            return render_template("auth/login.html"), 404
 
         session.clear()
         session["user_id"] = user.id
+        session["client_id"] = user.client_id
         return redirect(url_for("index"))
     return render_template("auth/login.html")
 
