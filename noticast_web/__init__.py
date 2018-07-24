@@ -10,12 +10,23 @@ def create_app(test_config: dict = None) -> Flask:
     if test_config is not None:
         app.config.from_mapping(test_config)
 
-    for item in ["SECRET_KEY", "DEBUG"]:
-        value = os.environ[item]
-        if value in ("true", "false"):
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
+
+    vars = {
+        "instance": app.instance_path
+    }
+
+    for item in ["SECRET_KEY", "DEBUG", "SQLALCHEMY_DATABASE_URI"]:
+        value = os.environ.get(item)
+        if value is None:
+            print("No config for: %s" % item)
+            continue
+        elif value in ("true", "false"):
             app.config[item] = value == "true"
         else:
-            app.config[item] = value
+            app.config[item] = value.format(vars)
+
+    print(app.secret_key)
 
     # Ensure the instance exists
     try:
