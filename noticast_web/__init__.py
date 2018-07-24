@@ -4,7 +4,7 @@ from flask import Flask, render_template, g, session
 
 
 def create_app(test_config: dict = None) -> Flask:
-    app = Flask(__name__, instance_relative_config=True)
+    app = Flask(__name__)
 
     # Load project config or testing config
     if test_config is None:
