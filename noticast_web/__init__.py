@@ -7,11 +7,15 @@ def create_app(test_config: dict = None) -> Flask:
     app = Flask(__name__)
 
     # Load project config or testing config
-    if test_config is None:
-        stage = os.environ.get("FLASK_ENV", "development")
-        app.config.from_pyfile("config/%s.py" % stage)
-    else:
+    if test_config is not None:
         app.config.from_mapping(test_config)
+
+    for item in ["SECRET_KEY", "DEBUG"]:
+        value = os.environ[item]
+        if value in ("true", "false"):
+            app.config[item] = value == "true"
+        else:
+            app.config[item] = value
 
     # Ensure the instance exists
     try:
