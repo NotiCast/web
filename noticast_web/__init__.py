@@ -6,13 +6,21 @@ from flask import Flask, render_template, g, session
 def create_app(test_config: dict = None) -> Flask:
     app = Flask(__name__)
 
+    # Load environ variables from app file if exists
+    try:
+        with open("/app/config.env") as f:
+            for key, value in (line.split("=") for line in f if "=" in line):
+                os.environ[key.strip()] = value.strip()
+    except OSError:
+        pass
+
     # Load project config or testing config
     if test_config is not None:
         app.config.from_mapping(test_config)
 
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 
-    vars = {
+    values = {
         "instance": app.instance_path
     }
 
@@ -24,9 +32,7 @@ def create_app(test_config: dict = None) -> Flask:
         elif value in ("true", "false"):
             app.config[item] = value == "true"
         else:
-            app.config[item] = value.format(vars)
-
-    print(app.secret_key)
+            app.config[item] = value.format(**values)
 
     # Ensure the instance exists
     try:
