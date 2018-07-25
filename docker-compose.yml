@@ -1,0 +1,25 @@
+version: '3'
+services:
+  noticast:
+    build: .
+    ports:
+    - 5000:80
+    volumes:
+    - .:/app
+    links:
+    - postgres
+    env_file:
+    - config.env
+  postgres:
+    image: postgres
+    restart: always
+    ports:
+    - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+    volumes:
+    - db-data:/var/lib/postgresql/data
+    - ${PWD}/schema.postgres.sql:/docker-entrypoint-initdb.d/schema.sql
+    - ${PWD}/config.postgres.env:/app/config.env
+volumes:
+  db-data:
