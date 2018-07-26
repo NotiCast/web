@@ -21,12 +21,12 @@ def unpaginate(method, element_name):
 
 
 class ThingGroup(object):
-    def __init__(self, arn: str, name: str, devices: List = None):
-        if devices is None:
-            devices = []
+    def __init__(self, arn: str, name: str, things: List = None):
+        if things is None:
+            things = []
         self.arn = arn
         self.name = name
-        self.devices = devices
+        self.things = things
 
     def __eq__(lhs, rhs):
         lhs.arn == rhs.arn
@@ -44,7 +44,11 @@ class ThingGroup(object):
         if isinstance(group, str):
             group = ThingGroup("", group)
             return group.sync()
-        return ThingGroup(group["groupArn"], group["groupName"], things)
+        if group.get("groupArn") is not None:
+            return ThingGroup(group["groupArn"], group["groupName"], things)
+        else:
+            return ThingGroup(group["thingGroupArn"], group["thingGroupName"],
+                              things)
 
     def sync(self, create: bool = False, remote: bool = False):
         group = None
@@ -58,8 +62,8 @@ class ThingGroup(object):
                     thingGroupName=self.name))
             except:  # noqa
                 if group is None and create:
-                    remote_group = iot.create_thing_group(
-                        thingGroupName=self.name)
+                    group = ThingGroup.try_from_loose(iot.create_thing_group(
+                        thingGroupName=self.name))
         if group is None:
             raise ValueError(self)
 
@@ -71,24 +75,29 @@ class ThingGroup(object):
             self.arn = group.arn
             self.name = group.name
 
-        group.things = list(get_things_for_group(group))
+        if remote:
+            group.things = list(get_things_for_group(group))
 
-        # Sync remote things with local things
-        if group.things != self.things:
-            # Sync remote group with local group storage
-            for thing in self.things:
-                if thing not in group.things:
-                    iot.add_thing_to_thing_group(
-                        thingGroupArn=group.arn,
-                        thingArn=thing.arn
-                    )
-            # Sync remote with what doesn't exist in local
-            for thing in group.things:
-                if thing not in self.things:
-                    iot.remove_thing_from_thing_group(
-                        thingGroupArn=group.arn,
-                        thingArn=thing.arn
-                    )
+            # Sync remote things with local things
+            if group.things != self.things:
+                # Sync remote group with local group storage
+                for thing in self.things:
+                    if thing not in group.things:
+                        iot.add_thing_to_thing_group(
+                            thingGroupArn=group.arn,
+                            thingArn=thing.arn
+                        )
+                # Sync remote with what doesn't exist in local
+                for thing in group.things:
+                    if thing not in self.things:
+                        iot.remove_thing_from_thing_group(
+                            thingGroupArn=group.arn,
+                            thingArn=thing.arn
+                        )
+        else:
+            self.things = list(get_things_for_group(group))
+
+        return self
 
 
 class Thing(object):

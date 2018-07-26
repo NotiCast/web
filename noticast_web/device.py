@@ -27,7 +27,7 @@ def register(form):
             db.session.commit()
             return redirect(url_for('index'))
         else:
-            flash("Device was not found: %r" % name, "error")
+            flash("Device was not found: %r|danger" % name, "notification")
             return redirect(url_for('device.from_arn'))
     return render_template("device/register.html")
 
@@ -51,6 +51,6 @@ def from_arn(form):
                 db.session.commit()
             return redirect(url_for('index'))
         else:
-            flash("Device was not found: %r" % arn, "error")
+            flash("Device was not found: %r|danger" % arn, "notification")
             return redirect(url_for('device.from_arn'))
     return render_template("device/from_arn.html")

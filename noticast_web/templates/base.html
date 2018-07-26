@@ -31,20 +31,22 @@
         <a class="navbar-item" href="{{ url_for('auth.login') }}">Log In</a>
         <a class="navbar-item" href="{{ url_for('auth.register') }}">Register</a>
         <a class="navbar-item" href="{{ url_for('device.register') }}">Add Device</a>
+        <a class="navbar-item" href="{{ url_for('group.index') }}">Manage Groups</a>
         <div class="navbar-end">
           <a class="navbar-item"
              href="{{ url_for('auth.logout') }}">Log Out</a>
         </div>
       </div>
     </nav>
-{% with messages = get_flashed_messages(category_filter=["error"]) %}
+{% with messages = get_flashed_messages(category_filter=["notification"]) %}
 {% if messages %}
     <section class="notifications">
       <div class="container">
 {% for message in messages %}
-        <div class="notification is-danger">
+{% set message_values = message.split("|") %}
+        <div class="notification is-{{ message_values[1] }}">
           <button class="delete"></button>
-          {{ message }}
+          {{ message_values[0] }}
         </div>
 {% endfor %}
       </div>
@@ -52,9 +54,13 @@
 {% endif %}
 {% endwith %}
     <script charset="utf-8">
-      console.log($("button.delete"));
-      $("button.delete").click(function() {
+      let elem = $("button.delete");
+      let count = elem.length;
+      elem.click(function() {
         $(this).parent("div.notification").remove();
+        if (--count == 0) {
+          $("section.notifications").remove();
+        }
       });
     </script>
     {% block body %}{% endblock %}

@@ -45,9 +45,10 @@ def create_app(test_config: dict = None) -> Flask:
     models.init_app(app)
 
     # blueprints
-    from . import auth, device
+    from . import auth, device, group
     app.register_blueprint(auth.blueprint)
     app.register_blueprint(device.blueprint)
+    app.register_blueprint(group.blueprint)
 
     @app.route("/")
     def index():

@@ -50,7 +50,8 @@ def login(form):
         user = User.query.filter(User.username.like(username)).first()
 
         if not check_password_hash(user.password, request.form["password"]):
-            flash("Password incorrect for: %s" % user.username, "error")
+            flash("Password incorrect for: %s|danger" % user.username,
+                  "notification")
             return render_template("auth/login.html"), 404
 
         session.clear()

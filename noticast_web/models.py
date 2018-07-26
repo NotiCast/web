@@ -36,14 +36,18 @@ class Device(db.Model):
     name = db.Column(db.String, unique=False, nullable=False)
     client_id = db.Column(db.Integer, db.ForeignKey("client.id"),
                           nullable=False)
-    groups = db.relationship("Group", secondary="devices2groups",
-                             backref=db.backref("devices"))
 
 
 class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     client_id = db.Column(db.Integer, db.ForeignKey("client.id"),
                           nullable=False)
+    name = db.Column(db.String, nullable=False)
+    arn = db.Column(db.String, nullable=False, unique=True)
+    devices = db.relationship("Device", secondary=devices2groups,
+                              lazy="subquery", backref=db.backref("groups"))
+    __table_args__ = (db.UniqueConstraint("client_id", "name",
+                                          name="_unique_group_name"),)
     # devices exists in the `groups` backref
 
 
