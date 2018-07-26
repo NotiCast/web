@@ -9,7 +9,7 @@ services:
     links:
     - postgres
     env_file:
-    - config.env
+    - config.postgres.env
   postgres:
     image: postgres
     restart: always
@@ -20,6 +20,5 @@ services:
     volumes:
     - db-data:/var/lib/postgresql/data
     - ${PWD}/schema.postgres.sql:/docker-entrypoint-initdb.d/schema.sql
-    - ${PWD}/config.postgres.env:/app/config.env
 volumes:
   db-data:
