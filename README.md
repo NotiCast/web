@@ -2,6 +2,7 @@ Flask website for NotiCast device manglement
 
 # Running
 ```sh
+ln -s config.env config.postgres.env
 docker-compose up --build
 ```
 
