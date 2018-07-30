@@ -1,29 +1,25 @@
 {% extends "base.html" %}
 
 {% block body %}
-<section class="section">
-  <div class="container">
-    <h1 class="title">Log In to Manage Devices</h1>
+<h1 class="title">Log In to Manage Devices</h1>
 {% if g.user is not none %}
-    <h3 class="subtitle has-text-danger">You are already logged in as: {{ g.user.username }}</h3>
+<h3 class="subtitle has-text-danger">You are already logged in as: {{ g.user.username }}</h3>
 {% endif %}
-    <div class="column is-narrow" style="width: 300px;">
-      <form action="{{ url_for('auth.login') }}" method="post" accept-charset="utf-8">
-        <div class="field">
-          <label class="label">Username</label>
-          <input class="input" type="text" name="username" id="username" value="" />
-        </div>
-        <div class="field">
-          <label class="label">Password</label>
-          <input class="input" type="password" name="password" id="password" value="" />
-        </div>
-        <div class="field">
-          <div class="control">
-            <input class="button is-link" type="submit">
-          </div>
-        </div>
-      </form>
+<div class="column is-narrow" style="width: 300px;">
+  <form action="{{ url_for('auth.login') }}" method="post" accept-charset="utf-8">
+    <div class="field">
+      <label class="label">Username</label>
+      <input class="input" type="text" name="username" id="username" value="" />
     </div>
-  </div>
-</section>
+    <div class="field">
+      <label class="label">Password</label>
+      <input class="input" type="password" name="password" id="password" value="" />
+    </div>
+    <div class="field">
+      <div class="control">
+        <input class="button is-link" type="submit">
+      </div>
+    </div>
+  </form>
+</div>
 {% endblock %}

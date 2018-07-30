@@ -3,6 +3,7 @@
 {% block script %}
 <script charset="utf-8">
 let client_name = $("input[name=client_username]").parent();
+let input = $("input[name=i-am]");
 $("input[name=i-am]").on("change", (ev)=> {
   if (ev.currentTarget.value == "user") {
     client_name.show();
@@ -10,54 +11,55 @@ $("input[name=i-am]").on("change", (ev)=> {
     client_name.hide();
   }
 });
+$(document).ready(()=> {
+  if (input.value == "client") {
+    client_name.hide();
+  }
+})
 </script>
 {% endblock %}
 
 {% block body %}
-<section class="section">
-  <div class="container">
-    <h1 class="title">Please enter your registration information below.</h1>
+<h1 class="title">Please enter your registration information below.</h1>
 {% if g.user is not none %}
-    <h3 class="subtitle has-text-danger">You are already logged in as: {{ g.user.username }}</h3>
+<h3 class="subtitle has-text-danger">You are already logged in as: {{ g.user.username }}</h3>
 {% endif %}
-    <div class="column is-narrow" style="width: 300px;">
-      <form action="{{ url_for('auth.register') }}" method="post" accept-charset="utf-8">
-        <div class="field">
-          <label class="label">Username</label>
-          <input class="input" type="text" name="username" id="username" value=""
-           size="{{ g.username_validator.min }}"
-           maxlength="{{ g.username_validator.max }}"/>
-        </div>
-        <div class="field">
-          <label class="label">Password</label>
-          <input class="input" type="password" name="password" id="password" value=""
-           size="{{ g.password_validator.min }}"
-           maxlength="{{ g.password_validator.max }}"/>
-        </div>
-        <div class="field">
-          <label class="radio">
-            <input type="radio" value="user" name="i-am" id="i-am" checked />
-            I am a User
-          </label>
-        </div>
-        <div class="field">
-          <label class="radio">
-            <input type="radio" value="client" name="i-am" id="i-am" />
-            I am a Client
-          </label>
-        </div>
-        <div class="field">
-          <label class="label">Client Username</label>
-          <input class="input" type="text" name="client_username"
-                 id="client_username" value="" />
-        </div>
-        <div class="field">
-          <div class="control">
-            <input class="button is-link" type="submit">
-          </div>
-        </div>
-      </form>
+<div class="column is-narrow" style="width: 300px;">
+  <form action="{{ url_for('auth.register') }}" method="post" accept-charset="utf-8">
+    <div class="field">
+      <label class="label">Username</label>
+      <input class="input" type="text" name="username" id="username" value=""
+       size="{{ g.username_validator.min }}"
+       maxlength="{{ g.username_validator.max }}"/>
     </div>
-  </div>
-</section>
+    <div class="field">
+      <label class="label">Password</label>
+      <input class="input" type="password" name="password" id="password" value=""
+       size="{{ g.password_validator.min }}"
+       maxlength="{{ g.password_validator.max }}"/>
+    </div>
+    <div class="field">
+      <label class="radio">
+        <input type="radio" value="user" name="i-am" checked />
+        I am a User
+      </label>
+    </div>
+    <div class="field">
+      <label class="radio">
+        <input type="radio" value="client" name="i-am" />
+        I am a Client
+      </label>
+    </div>
+    <div class="field">
+      <label class="label">Client Username</label>
+      <input class="input" type="text" name="client_username"
+             id="client_username" value="" />
+    </div>
+    <div class="field">
+      <div class="control">
+        <input class="button is-link" type="submit">
+      </div>
+    </div>
+  </form>
+</div>
 {% endblock %}

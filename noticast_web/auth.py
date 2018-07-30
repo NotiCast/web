@@ -6,7 +6,7 @@ from flask import (
     flash
 )
 from werkzeug import check_password_hash, generate_password_hash
-from .models import User, Client, db
+from .models import IntegrityError, User, Client, db
 
 blueprint = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -31,12 +31,17 @@ def register(form):
             client_id = client.id
         else:
             raise ValueError(form["i-am"])
-        user = User(client_id=client_id,
-                    username=username,
-                    password=generate_password_hash(password))
-        db.session.add(user)
-        db.session.commit()
-        return redirect(url_for('auth.login'))
+        try:
+            user = User(client_id=client_id,
+                        username=username,
+                        password=generate_password_hash(password))
+            db.session.add(user)
+            db.session.commit()
+        except IntegrityError as err:
+            print(err)
+            flash("User already exists: %s|danger" % username, "notification")
+            return redirect(url_for("auth.register"))
+        return redirect(url_for("auth.login"))
     return render_template("auth/register.html")
 
 
@@ -48,6 +53,10 @@ def login(form):
     if form.is_form_mode():
         username = request.form["username"]
         user = User.query.filter(User.username.like(username)).first()
+
+        if user is None:
+            flash("User does not exist: %s|danger" % username, "notification")
+            return redirect(url_for("auth.login"))
 
         if not check_password_hash(user.password, request.form["password"]):
             flash("Password incorrect for: %s|danger" % user.username,
@@ -73,13 +82,28 @@ def load_user():
     if user_id is None:
         g.user = None
     else:
-        g.user = User.query.filter_by(id=user_id).first()
+        user = User.query.filter_by(id=user_id).first()
+        if user is None:
+            flash("Expected user by id: %i; contact support|danger" % user_id,
+                  "notifications")
+        g.user = user
 
 
 def login_required(fn):
     @functools.wraps(fn)
     def wrapped_view(*args, **kwargs):
         if g.user is None:
+            return abort(403)
+        return fn(*args, **kwargs)
+    return wrapped_view
+
+
+def admin_required(fn):
+    @functools.wraps(fn)
+    def wrapped_view(*args, **kwargs):
+        if g.user is None:
+            return abort(403)
+        if not g.user.client.is_admin:
             return abort(403)
         return fn(*args, **kwargs)
     return wrapped_view

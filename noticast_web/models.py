@@ -2,12 +2,14 @@ import click
 from flask.cli import with_appcontext
 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import IntegrityError  # noqa: F401
 
 db = SQLAlchemy()
 
 
 class Client(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    is_admin = db.Column(db.Boolean, nullable=False, default=False)
     users = db.relationship("User", backref="client", lazy=True)
     groups = db.relationship("Group", backref="client", lazy=True)
     devices = db.relationship("Device", backref="client", lazy=True)
@@ -36,6 +38,8 @@ class Device(db.Model):
     name = db.Column(db.String, unique=False, nullable=False)
     client_id = db.Column(db.Integer, db.ForeignKey("client.id"),
                           nullable=False)
+    __table_args__ = (db.UniqueConstraint("client_id", "name",
+                                          name="_unique_group_name"),)
 
 
 class Group(db.Model):

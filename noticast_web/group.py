@@ -2,7 +2,8 @@ import uuid
 
 import spudbucket as sb
 
-from flask import Blueprint, render_template, session, redirect, url_for, flash
+from flask import (Blueprint, render_template, session, redirect, url_for,
+                   flash, g, abort)
 from .iot_util import ThingGroup
 from .auth import login_required
 from .models import Group, Device, db
@@ -20,6 +21,10 @@ def index(form):
     if form.is_form_mode():
         if form["group_type"] == "arn":
             # pull info from IoT Core
+            if not g.user.client.is_admin:
+                flash("Expected client to be admin for ARN register|danger",
+                      "notifications")
+                abort(403)
             thinggroup = ThingGroup(form["name_or_arn"], "")
             thinggroup.sync()
             group = Group(arn=thinggroup.arn,
@@ -66,7 +71,6 @@ def manage(form, arn):
                     device not in group.devices):
                 group.devices.append(device)
         db.session.commit()
-        flash("Successfully updated devices for group|success", "notification")
         flash("Successfully updated devices for group|success", "notification")
         return redirect(url_for("group.manage", arn=arn))
 

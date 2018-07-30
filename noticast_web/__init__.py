@@ -50,6 +50,11 @@ def create_app(test_config: dict = None) -> Flask:
     app.register_blueprint(device.blueprint)
     app.register_blueprint(group.blueprint)
 
+    @app.errorhandler(403)
+    def not_authorized(e):
+        print(e)
+        return render_template("errors/_403.html")
+
     @app.route("/")
     def index():
         if session.get("client_id"):

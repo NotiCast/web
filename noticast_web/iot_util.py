@@ -28,11 +28,11 @@ class ThingGroup(object):
         self.name = name
         self.things = things
 
-    def __eq__(lhs, rhs):
-        lhs.arn == rhs.arn
+    def __eq__(lhs, rhs):  # pylint: disable=no-self-argument
+        return lhs.arn == rhs.arn
 
-    def __ne__(lhs, rhs):
-        lhs.arn != rhs.arn
+    def __ne__(lhs, rhs):  # pylint: disable=no-self-argument
+        return lhs.arn != rhs.arn
 
     def __repr__(self):
         return "ThingGroup<%r>" % self.arn
@@ -108,6 +108,12 @@ class Thing(object):
         self.name = name
         self.groups = groups
 
+    def __eq__(lhs, rhs):  # pylint: disable=no-self-argument
+        return lhs.arn == rhs.arn
+
+    def __ne__(lhs, rhs):  # pylint: disable=no-self-argument
+        return lhs.arn != rhs.arn
+
     def __repr__(self):
         return "Thing<%r>" % self.arn
 
@@ -116,8 +122,7 @@ class Thing(object):
             return self.name
         elif key == "thingArn":
             return self.arn
-        else:
-            raise KeyError(key)
+        raise KeyError(key)
 
     @staticmethod
     def try_from_loose(thing, groups=None):
@@ -174,6 +179,33 @@ class Thing(object):
                         thingGroupArn=group.arn,
                         thingArn=thing.arn
                     )
+        return self
+
+    def gen_credentials(self):
+        # get current principals for thing
+        principals = iot.list_thing_principals(thingName=self.name)
+        short_name = self.arn.split("/")[-1]
+        for cert in principals["principals"]:
+            cert_id = cert.split("/")[-1]
+            iot.update_certificate(certificateId=cert_id, newStatus="INACTIVE")
+            iot.detach_thing_principal(thingName=short_name, principal=cert)
+            iot.delete_certificate(certificateId=cert_id, forceDelete=True)
+        values = iot.create_keys_and_certificate(setAsActive=True)
+        cert = {
+            "id": values["certificateId"],
+            "arn": values["certificateArn"],
+            "pem": values["certificatePem"]
+        }
+        # (PublicKey, PrivateKey)
+        keypair = (values["keyPair"].values())
+        # attach policy to cert
+        iot.attach_policy(
+            policyName="devices-policy",
+            target=cert["arn"])
+        # attach cert to device
+        # a cert is a "principal", so attach the Thing to the principal
+        iot.attach_thing_principal(thingName=short_name, principal=cert["arn"])
+        return cert, keypair, iot.describe_endpoint()
 
 
 def get_things_for_group(group: dict) -> Generator[Thing, None, None]:
