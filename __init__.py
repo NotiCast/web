@@ -27,6 +27,7 @@ class User(Base):
 
 devices2groups = Table(  # pylint: disable=invalid-name
     "devices2groups",
+    Base.metadata,
     Column("device_id", Integer, ForeignKey("device.id"),
            primary_key=True, nullable=False),
     Column("group_id", Integer, ForeignKey("group.id"),
