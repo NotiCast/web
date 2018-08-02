@@ -10,7 +10,7 @@ def create_app(test_config: dict = None) -> Flask:
     try:
         with open("/app/config.env") as f:
             for key, value in (line.split("=") for line in f if "=" in line):
-                os.environ[key.strip()] = value.strip()
+                os.environ[key.strip()] = value.strip().strip("'\"")
     except OSError:
         pass
 
@@ -31,8 +31,8 @@ def create_app(test_config: dict = None) -> Flask:
             continue
         elif value in ("true", "false"):
             app.config[item] = value == "true"
-        else:
-            app.config[item] = value.format(**values)
+        elif value[0:7] == "FORMAT:":
+            app.config[item] = value[7:].format(**values)
 
     # Ensure the instance exists
     try:
