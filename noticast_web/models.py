@@ -19,8 +19,8 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     client_id = db.Column(db.Integer, db.ForeignKey("client.id"),
                           nullable=False)
-    username = db.Column(db.String, nullable=False, unique=True)
-    password = db.Column(db.String, nullable=False)
+    username = db.Column(db.String(64), nullable=False, unique=True)
+    password = db.Column(db.String(256), nullable=False)
 
 
 devices2groups = db.Table(
@@ -34,8 +34,8 @@ devices2groups = db.Table(
 
 class Device(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    arn = db.Column(db.String, unique=True, nullable=False)
-    name = db.Column(db.String, unique=False, nullable=False)
+    arn = db.Column(db.String(256), unique=True, nullable=False)
+    name = db.Column(db.String(64), unique=False, nullable=False)
     client_id = db.Column(db.Integer, db.ForeignKey("client.id"),
                           nullable=False)
     __table_args__ = (db.UniqueConstraint("client_id", "name",
@@ -46,8 +46,8 @@ class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     client_id = db.Column(db.Integer, db.ForeignKey("client.id"),
                           nullable=False)
-    name = db.Column(db.String, nullable=False)
-    arn = db.Column(db.String, nullable=False, unique=True)
+    arn = db.Column(db.String(256), nullable=False, unique=True)
+    name = db.Column(db.String(64), nullable=False)
     devices = db.relationship("Device", secondary=devices2groups,
                               lazy="subquery", backref=db.backref("groups"))
     __table_args__ = (db.UniqueConstraint("client_id", "name",
