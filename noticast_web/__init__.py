@@ -33,6 +33,8 @@ def create_app(test_config: dict = None) -> Flask:
             app.config[item] = value == "true"
         elif value[:7] == "FORMAT:":
             app.config[item] = value[7:].format(**values)
+        else:
+            app.config[item] = value
 
     # Ensure the instance exists
     try:
