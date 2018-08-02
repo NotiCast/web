@@ -13,7 +13,7 @@ print(files)
 setup(
     name='noticast_web',
     version='0.1-dev',
-    packages=['noticast_web'],
+    packages=['noticast_web', 'noticast_web.rds_models'],
     package_data={
         "noticast_web": files
     },
