@@ -29,13 +29,13 @@ $(document).ready(()=> {
     <div class="field">
       <label class="label">Username</label>
       <input class="input" type="text" name="username" id="username" value=""
-       size="{{ g.username_validator.min }}"
+       minlength="{{ g.username_validator.min }}" required
        maxlength="{{ g.username_validator.max }}"/>
     </div>
     <div class="field">
       <label class="label">Password</label>
       <input class="input" type="password" name="password" id="password" value=""
-       size="{{ g.password_validator.min }}"
+       minlength="{{ g.password_validator.min }}" required
        maxlength="{{ g.password_validator.max }}"/>
     </div>
     <div class="field">

@@ -1,6 +1,7 @@
 import os
 
-from flask import Flask, render_template, g, session
+from flask import Flask, render_template, g, session, request, redirect, flash
+import spudbucket as sb
 
 
 def create_app(test_config: dict = None) -> Flask:
@@ -56,6 +57,12 @@ def create_app(test_config: dict = None) -> Flask:
     def not_authorized(e):
         print(e)
         return render_template("errors/_403.html")
+
+    @app.errorhandler(sb.e.ValidationError)
+    def validation_error(e):
+        flash("Error for form attribute %s|danger" % e,
+              "notification")
+        return redirect(request.url_rule.rule)
 
     @app.route("/")
     def index():

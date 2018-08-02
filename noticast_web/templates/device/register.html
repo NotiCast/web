@@ -6,7 +6,8 @@
     <form action="{{ url_for('device.register') }}" method="post" accept-charset="utf-8">
       <div class="field">
         <label class="label">Device Nickname</label>
-        <input class="input" type="text" name="device_name" id="device_name" value="" size="{{ g.device_name_validator.min }}" />
+        <input class="input" type="text" name="device_name" id="device_name" value=""
+        minlength="{{ g.device_name_validator.min }}" required />
       </div>
       <div class="field">
         <div class="control">
