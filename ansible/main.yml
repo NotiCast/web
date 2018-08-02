@@ -1,0 +1,70 @@
+---  # vim:set et sw=2 ts=2:
+- hosts: noticast_web
+  user: admin
+  become: true
+  tasks:
+  - name: Load vars
+    include_vars:
+      dir: vars
+      extensions:
+      - json
+      - yaml
+  - name: Install required dependencies
+    apt:
+      update_cache: true
+      name: "{{ item }}"
+    with_items:
+    - curl
+    - git
+    - python3
+    - python3-pip
+    - python3-setuptools
+    - python3-dev
+  - name: Install uwsgi (HTTP -> Flask)
+    pip:
+      name: uwsgi
+      executable: pip3
+  - name: Install Yarn
+    block:
+    - name: Install Yarn [apt_key]
+      apt_key:
+        url: https://dl.yarnpkg.com/debian/pubkey.gpg
+    - name: Install Yarn [apt_repository]
+      apt_repository:
+        repo: deb http://dl.yarnpkg.com/debian/ stable main
+    - name: Install Yarn [apt]
+      apt:
+        update_cache: true
+        name: yarn
+  - name: NotiCast Web installation
+    block:
+    - tempfile:
+        state: directory
+      register: web_build_dir
+      changed_when: false
+    - name: Install Spud Bucket from source
+      pip:
+        name: git+https://github.com/RyanSquared/spudbucket
+        executable: pip3
+    - name: Build NotiCast Web from source
+      shell: |
+        git clone https://github.com/NotiCast/web {{ web_build_dir.path }}
+        yarn install
+        pip3 install --upgrade .
+      args:
+        chdir: "{{ web_build_dir.path }}"
+    - set_fact:
+        noticast_web: "{{ noticast.value }}"
+    - name: Configure NotiCast Web environment
+      template:
+        src: config.env.j2
+        dest: /etc/noticast.conf
+    - name: Copy NotiCast Web systemd unit
+      copy:
+        src: noticast_web.service
+        dest: /etc/systemd/system/noticast_web.service
+    - name: Enable NotiCast Web systemd unit
+      systemd:
+        name: noticast_web
+        state: started
+        enabled: true

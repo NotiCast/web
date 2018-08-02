@@ -106,3 +106,6 @@ venv.bak/
 **/node_modules/*
 
 config.*.env
+
+ansible/files/config.env
+ansible/vars/terraform.json

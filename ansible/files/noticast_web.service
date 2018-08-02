@@ -1,0 +1,9 @@
+[Unit]
+Description=NotiCast Website
+
+[Service]
+EnvironmentFile=/etc/noticast.conf
+ExecStart=/usr/local/bin/uwsgi --http :80 --module noticast_web --callable create_app()
+
+[Install]
+WantedBy=multi-user.target
