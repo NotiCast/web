@@ -1,5 +1,5 @@
 ---  # vim:set et sw=2 ts=2:
-- hosts: noticast_web
+- hosts: all
   user: admin
   become: true
   tasks:
