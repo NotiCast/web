@@ -9,6 +9,11 @@
       extensions:
       - json
       - yaml
+  - name: Deploy SSH keys
+    authorized_key:
+      user: admin
+      key: "{{ lookup('file', item) }}"
+    with_fileglob: "keys/*.pub"
   - name: Install required dependencies
     apt:
       update_cache: true
