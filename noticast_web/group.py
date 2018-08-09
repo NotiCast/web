@@ -67,7 +67,7 @@ def manage(form, arn):
                 # remove from database
                 group.devices.remove(device)
         for device in devices:
-            if (form.get("dev_" + device.name) is None and
+            if (form.get("dev_" + device.name) is not None and
                     device not in group.devices):
                 group.devices.append(device)
         db.session.commit()
