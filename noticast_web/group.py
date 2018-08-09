@@ -63,6 +63,7 @@ def manage(form, arn):
         group_devices = client_devices.filter(Device.groups.any(
             Group.arn.endswith(arn))).all()
         for device in group_devices:
+            print(form.get("dev_" + device.name))
             if form.get("dev_" + device.name) is None:
                 # remove from database
                 group.devices.remove(device)
