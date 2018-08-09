@@ -83,5 +83,6 @@ def manage(form, arn):
             devices_list[device.arn] = (device, is_in_group)
             if is_in_group:
                 break
+    print(devices_list)
     return render_template("group/manage.html", devices=devices_list,
                            group=group, arn=arn)
