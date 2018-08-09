@@ -3,7 +3,7 @@ import uuid
 import spudbucket as sb
 
 from flask import (Blueprint, render_template, session, redirect, url_for,
-                   flash, g, abort)
+                   flash, g, abort, form as flask_form)
 from .iot_util import ThingGroup
 from .auth import login_required
 from .models import Group, Device, db
@@ -63,13 +63,13 @@ def manage(form, arn):
         group_devices = client_devices.filter(Device.groups.any(
             Group.arn.endswith(arn))).all()
         for device in group_devices:
-            print(form)
-            print(form.get("dev_" + device.name))
-            if form.get("dev_" + device.name) is None:
+            print(flask_form)
+            print(flask_form.get("dev_" + device.name))
+            if flask_form.get("dev_" + device.name) is None:
                 # remove from database
                 group.devices.remove(device)
         for device in devices:
-            if (form.get("dev_" + device.name) is not None and
+            if (flask_form.get("dev_" + device.name) is not None and
                     device not in group.devices):
                 group.devices.append(device)
         db.session.commit()
