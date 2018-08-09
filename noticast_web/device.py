@@ -17,7 +17,8 @@ def new_cert(arn):
     cert, (pubkey, privkey), endpoint = thing.gen_credentials()
     return render_template("device/new_credentials.html",
                            cert=cert, pubkey=pubkey, privkey=privkey,
-                           endpoint=endpoint["endpointAddress"])
+                           endpoint=endpoint["endpointAddress"],
+                           arn=thing.arn)
 
 
 # Register new device with AWS and attach to database
