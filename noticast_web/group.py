@@ -63,8 +63,6 @@ def manage(form, arn):
         group_devices = client_devices.filter(Device.groups.any(
             Group.arn.endswith(arn))).all()
         for device in group_devices:
-            print(request.form)
-            print(request.form.get("dev_" + device.name))
             if request.form.get("dev_" + device.name) is None:
                 # remove from database
                 group.devices.remove(device)
@@ -81,7 +79,6 @@ def manage(form, arn):
         if devices_list.get(device.arn) is None:
             devices_list[device.arn] = (device, False)
         for group in device.groups:
-            print(group.arn, group.arn[-len(arn):], arn)
             is_in_group = group.arn[-len(arn):] == arn
             devices_list[device.arn] = (device, is_in_group)
             if is_in_group:
