@@ -79,6 +79,7 @@ def manage(form, arn):
         if devices_list.get(device.arn) is None:
             devices_list[device.arn] = (device, False)
         for group in device.groups:
+            print(group.arn, group.arn[-len(arn):], arn)
             is_in_group = group.arn[-len(arn):] == arn
             devices_list[device.arn] = (device, is_in_group)
             if is_in_group:
