@@ -62,7 +62,7 @@ def create_app(test_config: dict = None) -> Flask:
 
     @app.errorhandler(sb.e.FormError)
     def form_error(e):
-        sentry.captureMessage(repr(e))
+        print(sentry.captureMessage(repr(e)))
         flash("Error for form submission %s|danger" % e,
               "notification")
         return redirect(request.url_rule.rule)
