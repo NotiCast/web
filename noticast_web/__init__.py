@@ -1,11 +1,14 @@
 import os
 
-from flask import Flask, render_template, g, session, request, redirect, flash
+from raven.contrib.flask import Sentry
+from flask import Flask, render_template, session, request, redirect, flash
 import spudbucket as sb
 
 
 def create_app(test_config: dict = None) -> Flask:
     app = Flask(__name__)
+
+    sentry = Sentry(app)
 
     # Load environ variables from app file if exists
     try:
@@ -55,11 +58,11 @@ def create_app(test_config: dict = None) -> Flask:
 
     @app.errorhandler(403)
     def not_authorized(e):
-        print(e)
         return render_template("errors/_403.html")
 
     @app.errorhandler(sb.e.ValidationError)
     def validation_error(e):
+        sentry.captureException()
         flash("Error for form attribute %s|danger" % e,
               "notification")
         return redirect(request.url_rule.rule)
