@@ -60,10 +60,10 @@ def create_app(test_config: dict = None) -> Flask:
     def not_authorized(e):
         return render_template("errors/_403.html")
 
-    @app.errorhandler(sb.e.ValidationError)
-    def validation_error(e):
+    @app.errorhandler(sb.e.FormError)
+    def form_error(e):
         sentry.captureException()
-        flash("Error for form attribute %s|danger" % e,
+        flash("Error for form submission %s|danger" % e,
               "notification")
         return redirect(request.url_rule.rule)
 
