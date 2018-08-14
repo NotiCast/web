@@ -14,7 +14,7 @@ blueprint = Blueprint("device", __name__, url_prefix="/device")
 @login_required
 def new_cert(arn):
     thing = Thing("", arn).sync()
-    cert, (pubkey, privkey), endpoint = thing.gen_credentials()
+    cert, (privkey, pubkey), endpoint = thing.gen_credentials()
     return render_template("device/new_credentials.html",
                            cert=cert, pubkey=pubkey, privkey=privkey,
                            endpoint=endpoint["endpointAddress"],
