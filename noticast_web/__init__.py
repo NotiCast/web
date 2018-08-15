@@ -1,5 +1,6 @@
 import os
 
+from werkzeug.contrib.fixers import ProxyFix
 from raven.contrib.flask import Sentry
 from flask import Flask, render_template, session, request, redirect, flash
 import spudbucket as sb
@@ -7,6 +8,9 @@ import spudbucket as sb
 
 def create_app(test_config: dict = None) -> Flask:
     app = Flask(__name__)
+
+    # for usage with proxies
+    app.wsgi_app = ProxyFix(app.wsgi_app)
 
     sentry = Sentry(app)
 
@@ -55,6 +59,11 @@ def create_app(test_config: dict = None) -> Flask:
     app.register_blueprint(auth.blueprint)
     app.register_blueprint(device.blueprint)
     app.register_blueprint(group.blueprint)
+
+    @app.before_request
+    def redirect_insecure():
+        if not request.is_secure:
+            return redirect(request.url.replace('http://', 'https://'))
 
     @app.errorhandler(403)
     def not_authorized(e):
