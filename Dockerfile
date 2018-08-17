@@ -14,6 +14,7 @@ RUN pip3 install git+https://github.com/RyanSquared/spudbucket
 RUN pip3 install boto3
 RUN pip3 install psycopg2
 RUN pip3 install pymysql
+RUN pip3 install raven[flask]
 
 ENV STATIC_PATH /app/noticast_web/static
 
