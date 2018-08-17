@@ -100,7 +100,6 @@ def load_user():
         if auth_header is not None:
             username, pw = auth_header.split(" ")[-1].split(":")
             user = check_login(pw, username=username)
-            print(user)
     else:
         user = User.query.filter_by(id=user_id).first()
         if user is None:
