@@ -12,7 +12,7 @@ blueprint = Blueprint("auth", __name__, url_prefix="/auth")
 
 
 @blueprint.route("/register", methods=("GET", "POST"))
-@sb.validator(sb.v.ExistsValidator("i-am"))
+@sb.validator(sb.v.SelectValidator("i-am", ["user", "client"]))
 @sb.validator(sb.v.LengthValidator("username", min=5, max=30))
 @sb.validator(sb.v.LengthValidator("password", min=7))
 @sb.base
@@ -38,7 +38,6 @@ def register(form):
             db.session.add(user)
             db.session.commit()
         except IntegrityError as err:
-            print(err)
             flash("User already exists: %s|danger" % username, "notification")
             return redirect(url_for("auth.register"))
         return redirect(url_for("auth.login"))
