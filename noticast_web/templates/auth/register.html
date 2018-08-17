@@ -39,17 +39,13 @@ $(document).ready(()=> {
        maxlength="{{ g.password_validator.max }}"/>
     </div>
     <div class="field">
+{% for value in g["i-am_validator"].options %}
       <label class="radio">
-        <input type="radio" value="user" name="i-am" checked />
-        I am a User
+        <input type="radio" value="{{ value }}" name="i-am" checked />
+        I am a {{ value | capitalize }}
       </label>
     </div>
-    <div class="field">
-      <label class="radio">
-        <input type="radio" value="client" name="i-am" />
-        I am a Client
-      </label>
-    </div>
+{% endfor %}
     <div class="field">
       <label class="label">Client Username</label>
       <input class="input" type="text" name="client_username"
