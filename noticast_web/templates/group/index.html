@@ -1,56 +1,52 @@
 {% extends "base.html" %}
 
 {% block body %}
-<div class="section">
-  <div class="container">
-    <form action="{{ url_for("group.index") }}" method="post" style="width: 300px;">
-      <div class="field">
-        <label class="label">Group Name</label>
-        <input class="input" type="text" name="name_or_arn" id="group" value=""
-          minlength="{{ g.name_or_arn_validator.min }}" required>
-      </div>
+<form action="{{ url_for("group.index") }}" method="post" style="width: 300px;">
+  <div class="field">
+    <label class="label">Group Name</label>
+    <input class="input" type="text" name="name_or_arn" id="group" value=""
+      minlength="{{ g.name_or_arn_validator.min }}" required>
+  </div>
 {% if g.user.client.is_admin %}
 {% for type in g.group_type_validator.options %}
-      <div class="field">
-        <label class="radio">
-          <input type="radio" value="{{ type }}" name="{{ g.group_type_validator.name }}" id="{{ g.group_type_validator.name }}" checked>
-          Group {{ type }}
-        </label>
-      </div>
+  <div class="field">
+    <label class="radio">
+      <input type="radio" value="{{ type }}" name="{{ g.group_type_validator.name }}" id="{{ g.group_type_validator.name }}" checked>
+      Group {{ type }}
+    </label>
+  </div>
 {% endfor %}
 {% else %}
-      <input type="hidden" value="name" name="{{ g.group_type_validator.name }}" />
+  <input type="hidden" value="name" name="{{ g.group_type_validator.name }}" />
 {% endif %}
-      <div class="field">
-        <div class="control">
-          <input class="button is-link" type="submit">
-        </div>
-      </div>
-    </form>
-    <br>
-    <table class="table is-fullwidth is-bordered is-striped">
-      <thead>
-        <tr>
-          <th>Group Name</th>
-          <th>Group ARN</th>
-          <th>Devices In Group</th>
-          <th style="width: 10px"></th>
-        </tr>
-      </thead>
-      <tbody>
-{% for group in groups %}
-        <tr>
-          <th>{{ group.name }}</th>
-          <td>{{ group.arn }}</td>
-          <td>{{ group.devices | length }}</td>
-          <td style="text-align: right">
-            <a class="button" href="{{ url_for(
-              "group.manage", arn=group.arn.split("/")[-1]) }}">Manage</a>
-          </td>
-        </tr>
-{% endfor %}
-      </tbody>
-    </table>
+  <div class="field">
+    <div class="control">
+      <input class="button is-link" type="submit">
+    </div>
   </div>
-</div>
+</form>
+<br>
+<table class="table is-fullwidth is-bordered is-striped">
+  <thead>
+    <tr>
+      <th>Group Name</th>
+      <th>Group ARN</th>
+      <th>Devices In Group</th>
+      <th style="width: 10px"></th>
+    </tr>
+  </thead>
+  <tbody>
+{% for group in groups %}
+    <tr>
+      <th>{{ group.name }}</th>
+      <td>{{ group.arn }}</td>
+      <td>{{ group.devices | length }}</td>
+      <td style="text-align: right">
+        <a class="button" href="{{ url_for(
+          "group.manage", arn=group.arn.split("/")[-1]) }}">Manage</a>
+      </td>
+    </tr>
+{% endfor %}
+  </tbody>
+</table>
 {% endblock %}
