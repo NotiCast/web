@@ -4,7 +4,7 @@
 <h1 class="title">Manage Devices</h1>
 <h3 class="subtitle">for group {{ group.name }}</h3>
 <form action="{{ url_for("group.manage", arn=arn) }}" method="post" style="width: 300px;">
-{% for device in devices.values() %}
+{% for device in devices %}
   <div class="field">
     <label class="checkbox">
       <input type="checkbox" name="dev_{{ device[0].name }}" value="1"

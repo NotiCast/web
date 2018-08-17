@@ -1,8 +1,8 @@
 import os
 
 from werkzeug.contrib.fixers import ProxyFix
-from raven.contrib.flask import Sentry
-from flask import Flask, render_template, session, request, redirect, flash
+# from raven.contrib.flask import Sentry  # XXX readd
+from flask import Flask, render_template, request, redirect, flash, g
 import spudbucket as sb
 
 
@@ -12,7 +12,7 @@ def create_app(test_config: dict = None) -> Flask:
     # for usage with proxies
     app.wsgi_app = ProxyFix(app.wsgi_app)
 
-    sentry = Sentry(app)
+    # sentry = Sentry(app)  # XXX readd
 
     # Load environ variables from app file if exists
     try:
@@ -51,6 +51,7 @@ def create_app(test_config: dict = None) -> Flask:
         pass
 
     # extensions
+    from .app_view import AppRouteView
     from . import models
     models.init_app(app)
 
@@ -60,10 +61,12 @@ def create_app(test_config: dict = None) -> Flask:
     app.register_blueprint(device.blueprint)
     app.register_blueprint(group.blueprint)
 
+    """
     @app.before_request
     def redirect_insecure():
         if not request.is_secure:
             return redirect(request.url.replace('http://', 'https://'))
+    """
 
     @app.errorhandler(403)
     def not_authorized(e):
@@ -71,17 +74,21 @@ def create_app(test_config: dict = None) -> Flask:
 
     @app.errorhandler(sb.e.FormError)
     def form_error(e):
-        print(sentry.captureMessage(repr(e)))
         flash("Error for form submission %s|danger" % e,
               "notification")
         return redirect(request.url_rule.rule)
 
-    @app.route("/")
-    def index():
-        if session.get("client_id"):
-            query = models.Device.query
-            devices = query.filter_by(client_id=session["client_id"]).all()
-            return render_template("index.html", devices=devices)
-        return render_template("index.html")
+    class Index(AppRouteView):
+        template_name = "index.html"
+
+        def populate(self):
+            if g.user is not None:
+                query = models.Device.query
+                devices = query.filter_by(client_id=g.user.client_id).all()
+                return {"devices": [{"name": d.name, "arn": d.arn}
+                                    for d in devices]}
+            return {}
+
+    app.add_url_rule("/", view_func=Index.as_view("index"))
 
     return app

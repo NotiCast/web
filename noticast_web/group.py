@@ -3,85 +3,117 @@ import uuid
 import spudbucket as sb
 
 from flask import (Blueprint, render_template, session, redirect, url_for,
-                   flash, g, abort, request)
+                   flash, g, request)
 from .iot_util import ThingGroup
 from .auth import login_required
 from .models import Group, Device, db
+from .app_view import AppRouteView, response
 
 blueprint = Blueprint('group', __name__, url_prefix="/group")
 
 
-# Register new device with AWS and attach to database
-@blueprint.route("/", methods=("GET", "POST"))
-@login_required
-@sb.validator(sb.v.LengthValidator("name_or_arn", min=4))
-@sb.validator(sb.v.SelectValidator("group_type", ["arn", "name"]))
-@sb.base
-def index(form):
-    if form.is_form_mode():
-        if form["group_type"] == "arn":
-            # pull info from IoT Core
+def transform_group(group):
+    return {
+        "name": group.name,
+        "arn": group.arn,
+        "devices": [{"name": d.name, "arn": d.arn} for d in group.devices]
+    }
+
+
+class Index(AppRouteView):
+    decorators = [
+        login_required,
+        sb.validator(sb.v.LengthValidator("name_or_arn", min=4)),
+        sb.validator(sb.v.SelectValidator("group_type", ["arn", "name"]))
+    ]
+    route = "group.index"
+    template_name = "group/index.html"
+
+    def populate(self):
+        # Get groups for current user
+        groups = Group.query.filter_by(client_id=g.user.client_id).all()
+        return {
+            "groups": [transform_group(g) for g in groups]
+        }
+
+    def handle_post(self, values):
+        if values["group_type"] == "arn":
             if not g.user.client.is_admin:
-                flash("Expected client to be admin for ARN register|danger",
-                      "notifications")
-                abort(403)
-            thinggroup = ThingGroup(form["name_or_arn"], "")
+                return response("Expected client to be admin for ARN", 403)
+            thinggroup = ThingGroup(values["name_or_arn"], "")
             thinggroup.sync()
             group = Group(arn=thinggroup.arn,
-                          client_id=session["client_id"],
+                          client_id=g.user.client_id,
                           name=thinggroup.name)
             for thing in thinggroup.things:
                 device = Device.query.filter_by(arn=thing.arn).first()
                 if device is not None:
                     group.devices.append(device)
-            db.session.add(group)
-            db.session.commit()
         else:
             new_uuid = uuid.uuid4()
-            thinggroup = ThingGroup('', new_uuid.hex)
+            thinggroup = ThingGroup("", new_uuid.hex)
             thinggroup.sync(create=True)
             group = Group(arn=thinggroup.arn,
-                          client_id=session["client_id"],
-                          name=form["name_or_arn"])
-            db.session.add(group)
-            db.session.commit()
-        return redirect(url_for("group.index"))
-    groups = Group.query.filter_by(client_id=session["client_id"]).all()
-    return render_template("group/index.html", groups=groups)
+                          client_id=g.user.client_id,
+                          name=values["name_or_arn"])
+        db.session.add(group)
+        db.session.commit()
+        return response("Group successfully created: %s" % group.name,
+                        payload={"group": transform_group(group)})
 
 
-@blueprint.route("/manage/<arn>", methods=("GET", "POST"))
-@login_required
-@sb.base
-def manage(form, arn):
-    query = [Group.arn.endswith(arn), Group.client_id == session["client_id"]]
-    group = Group.query.filter(*query).first()
-    devices = Device.query.filter_by(client_id=session["client_id"]).all()
-    if form.is_form_mode():
-        # query for current devices in group
-        client_devices = Device.query.filter_by(client_id=session["client_id"])
-        group_devices = client_devices.filter(Device.groups.any(
-            Group.arn.endswith(arn))).all()
-        for device in group_devices:
-            if request.form.get("dev_" + device.name) is None:
-                # remove from database
-                group.devices.remove(device)
+blueprint.add_url_rule("/", view_func=Index.as_view("index"))
+
+
+class Manage(AppRouteView):
+    route = "group.manage"
+    template_name = "group/manage.html"
+
+    def populate(self, arn):
+        query = [Group.arn.endswith(arn), Group.client_id == g.user.client_id]
+        group = Group.query.filter(*query).first()
+        devices = Device.query.filter_by(client_id=g.user.client_id).all()
+        devices_list = {}
         for device in devices:
-            if (request.form.get("dev_" + device.name) is not None and
+            if devices_list.get(device.arn) is None:
+                devices_list[device.arn] = (device, False)
+            for group in device.groups:
+                is_in_group = group.arn[-len(arn):] == arn
+                devices_list[device.arn] = (device, is_in_group)
+                if is_in_group:
+                    break
+        # transform to JSON-able output
+        all_devices = [({"name": d[0].name, "arn": d[0].arn}, d[1])
+                       for d in devices_list.values()]
+        return {
+            "group": {
+                "name": group.name,
+                "arn": group.arn,
+                "devices": [d[0] for d in all_devices if d[1]]
+            },
+            "devices": all_devices,
+            "arn": arn
+        }
+
+    def handle_post(self, values, arn):
+        self.redirect_args = {"arn": arn}
+        query = [Group.arn.endswith(arn), Group.client_id == g.user.client_id]
+        group = Group.query.filter(*query).first()
+        devices = Device.query.filter_by(client_id=g.user.client_id)
+        group_devices = devices.filter(Device.groups.any(
+            Group.arn.endswith(arn))).all()
+        for device in group_devices:  # locals are gone, remove remote
+            name = "dev_" + device.name
+            if values.get(name, request.form.get(name)) is None:
+                # remove from remote, not in JSON or form
+                group.devices.remove(device)
+        for device in devices:  # locals exist, add to remote
+            name = "dev_" + device.name
+            if (values.get(name, request.form.get(name)) is not None and
                     device not in group.devices):
                 group.devices.append(device)
         db.session.commit()
-        flash("Successfully updated devices for group|success", "notification")
-        return redirect(url_for("group.manage", arn=arn))
+        return response("Successfully updated devices for group")
 
-    devices_list = {}
-    for device in devices:
-        if devices_list.get(device.arn) is None:
-            devices_list[device.arn] = (device, False)
-        for group in device.groups:
-            is_in_group = group.arn[-len(arn):] == arn
-            devices_list[device.arn] = (device, is_in_group)
-            if is_in_group:
-                break
-    return render_template("group/manage.html", devices=devices_list,
-                           group=group, arn=arn)
+
+blueprint.add_url_rule("/manage/<arn>", view_func=Manage.as_view("manage"))

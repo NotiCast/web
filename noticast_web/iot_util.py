@@ -196,8 +196,8 @@ class Thing(object):
             "arn": values["certificateArn"],
             "pem": values["certificatePem"]
         }
-        # (PublicKey, PrivateKey)
-        keypair = (values["keyPair"].values())
+        keypair = (values["keyPair"]["PublicKey"],
+                   values["keyPair"]["PrivateKey"])
         # attach policy to cert
         iot.attach_policy(
             policyName="devices-policy",
