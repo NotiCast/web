@@ -38,7 +38,8 @@ SET default_with_oids = false;
 --
 
 CREATE TABLE public.client (
-    id integer NOT NULL
+    id integer NOT NULL,
+    is_admin boolean DEFAULT FALSE
 );
 
 
@@ -120,6 +121,8 @@ ALTER TABLE public.devices2groups OWNER TO postgres;
 
 CREATE TABLE public."group" (
     id integer NOT NULL,
+    arn character varying NOT NULL,
+    name character varying NOT NULL,
     client_id integer NOT NULL
 );
 
