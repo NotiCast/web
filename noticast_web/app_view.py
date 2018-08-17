@@ -102,6 +102,7 @@ class AppRouteView(MethodView):
         return self.get_html(*args, **kwargs)
 
     def post(self, *args, **kwargs):
+        print("is_json:", is_json(request))
         if is_json(request):
             return self.post_json(*args, **kwargs)
         else:
