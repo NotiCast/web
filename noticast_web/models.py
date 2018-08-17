@@ -19,5 +19,4 @@ def init_db_command():
 
 def init_app(app):
     db.init_app(app)
-    db.create_all()
     app.cli.add_command(init_db_command)
