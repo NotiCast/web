@@ -38,8 +38,8 @@ $(document).ready(()=> {
        minlength="{{ g.password_validator.min }}" required
        maxlength="{{ g.password_validator.max }}"/>
     </div>
-    <div class="field">
 {% for value in g["i-am_validator"].options %}
+    <div class="field">
       <label class="radio">
         <input type="radio" value="{{ value }}" name="i-am" checked />
         I am a {{ value | capitalize }}
