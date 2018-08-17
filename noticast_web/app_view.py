@@ -68,6 +68,7 @@ class AppRouteView(MethodView):
     def post_json(self, *args, **kwargs):
         values = request.json
         result = self.handle_post(values, *args, **kwargs)
+        print(result)
         if "payload" in result:
             return jsonify(result["payload"]), result.get("status_code", 200)
         return (jsonify({"message": result.get("message", "no output")}),
