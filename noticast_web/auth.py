@@ -13,9 +13,9 @@ blueprint = Blueprint("auth", __name__, url_prefix="/auth")
 
 class Register(AppRouteView):
     decorators = [
-        gs.validator(gs.v.SelectValidator("i-am", ["user", "client"])),
-        gs.validator(gs.v.LengthValidator("username", min=5, max=30)),
-        gs.validator(gs.v.LengthValidator("password", min=7))
+        gs.validator(gs.v.Select("i-am", ["user", "client"])),
+        gs.validator(gs.v.Length("username", min=5, max=30)),
+        gs.validator(gs.v.Length("password", min=7))
     ]
     route = "auth.register"
     template_name = "auth/register.html"
@@ -62,8 +62,8 @@ def check_login(password, username: str = None, user: User = None):
 
 class Login(AppRouteView):
     decorators = [
-        gs.validator(gs.v.ExistsValidator("username")),
-        gs.validator(gs.v.ExistsValidator("password"))
+        gs.validator(gs.v.Exists("username")),
+        gs.validator(gs.v.Exists("password"))
     ]
     route = "auth.login"
     template_name = "auth/login.html"

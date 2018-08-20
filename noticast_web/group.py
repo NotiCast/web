@@ -24,8 +24,8 @@ def transform_group(group):
 class Index(AppRouteView):
     decorators = [
         login_required,
-        gs.validator(gs.v.LengthValidator("name_or_arn", min=4)),
-        gs.validator(gs.v.SelectValidator("group_type", ["arn", "name"]))
+        gs.validator(gs.v.Length("name_or_arn", min=4)),
+        gs.validator(gs.v.Select("group_type", ["arn", "name"]))
     ]
     route = "group.index"
     template_name = "group/index.html"

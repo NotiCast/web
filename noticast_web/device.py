@@ -33,7 +33,7 @@ blueprint.add_url_rule("/new_cert/<arn>",
 
 class Register(AppRouteView):
     decorators = [login_required,
-                  gs.validator(gs.v.LengthValidator("device_name", min=8))]
+                  gs.validator(gs.v.Length("device_name", min=8))]
     redirect_to = "index"
     template_name = "device/register.html"
 
@@ -56,7 +56,7 @@ blueprint.add_url_rule("/register", view_func=Register.as_view("register"))
 
 class FromArn(AppRouteView):
     decorators = [admin_required,
-                  gs.validator(gs.v.ExistsValidator("device_arn"))]
+                  gs.validator(gs.v.Exists("device_arn"))]
     route = "device.from_arn"
     template_name = "device/from_arn.html"
 
