@@ -88,8 +88,9 @@ def create_app(test_config: dict = None) -> Flask:
             if g.user is not None:
                 query = models.Device.query
                 devices = query.filter_by(client_id=g.user.client_id).all()
-                return {"devices": [{"name": d.name, "arn": d.arn}
-                                    for d in devices]}
+                return {"devices": sorted(
+                    [{"name": d.name, "arn": d.arn} for d in devices],
+                    key=lambda x: x["name"])}
             return {}
 
     app.add_url_rule("/", view_func=Index.as_view("index"))

@@ -16,7 +16,9 @@ def transform_group(group):
     return {
         "name": group.name,
         "arn": group.arn,
-        "devices": [{"name": d.name, "arn": d.arn} for d in group.devices]
+        "devices": sorted(
+            [{"name": d.name, "arn": d.arn} for d in group.devices],
+            key=lambda x: x["name"])
     }
 
 
@@ -33,7 +35,8 @@ class Index(AppRouteView):
         # Get groups for current user
         groups = Group.query.filter_by(client_id=g.user.client_id).all()
         return {
-            "groups": [transform_group(g) for g in groups]
+            "groups": sorted([transform_group(g) for g in groups],
+                             key=lambda x: x["name"])
         }
 
     def handle_post(self, values):
@@ -89,9 +92,10 @@ class Manage(AppRouteView):
             "group": {
                 "name": group.name,
                 "arn": group.arn,
-                "devices": [d[0] for d in all_devices if d[1]]
+                "devices": sorted([d[0] for d in all_devices if d[1]],
+                                  key=lambda x: x["name"].lower())
             },
-            "devices": all_devices,
+            "devices": sorted(all_devices, key=lambda x: x[0]["name"].lower()),
             "arn": arn
         }
 
