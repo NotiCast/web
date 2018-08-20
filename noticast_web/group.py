@@ -1,9 +1,8 @@
 import uuid
 
-import spudbucket as sb
+import gigaspoon as gs
 
-from flask import (Blueprint, render_template, session, redirect, url_for,
-                   flash, g, request)
+from flask import (Blueprint, g, request)
 from .iot_util import ThingGroup
 from .auth import login_required
 from .models import Group, Device, db
@@ -25,8 +24,8 @@ def transform_group(group):
 class Index(AppRouteView):
     decorators = [
         login_required,
-        sb.validator(sb.v.LengthValidator("name_or_arn", min=4)),
-        sb.validator(sb.v.SelectValidator("group_type", ["arn", "name"]))
+        gs.validator(gs.v.LengthValidator("name_or_arn", min=4)),
+        gs.validator(gs.v.SelectValidator("group_type", ["arn", "name"]))
     ]
     route = "group.index"
     template_name = "group/index.html"

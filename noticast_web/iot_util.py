@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Generator, Tuple, List
+from typing import Generator, List
 
 import boto3
 

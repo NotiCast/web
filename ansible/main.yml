@@ -47,9 +47,9 @@
         state: directory
       register: web_build_dir
       changed_when: false
-    - name: Install Spud Bucket from source
+    - name: Install Gigaspoon from source
       pip:
-        name: git+https://github.com/RyanSquared/spudbucket
+        name: git+https://github.com/RyanSquared/gigaspoon
         executable: pip3
     - name: Build NotiCast Web from source
       shell: |

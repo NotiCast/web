@@ -2,8 +2,8 @@ import os
 
 from werkzeug.contrib.fixers import ProxyFix
 from raven.contrib.flask import Sentry
-from flask import Flask, render_template, request, redirect, flash, g, jsonify
-import spudbucket as sb
+from flask import Flask, render_template, request, redirect, g, jsonify
+import gigaspoon as gs
 
 
 def create_app(test_config: dict = None) -> Flask:
@@ -71,7 +71,7 @@ def create_app(test_config: dict = None) -> Flask:
     def not_authorized(e):
         return render_template("errors/_403.html"), 403
 
-    @app.errorhandler(sb.e.FormError)
+    @app.errorhandler(gs.e.FormError)
     def form_error(e):
         status_code = 400
         value = response("Error for form submission (%s)" % e,

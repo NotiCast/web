@@ -1,6 +1,6 @@
 import uuid
 
-import spudbucket as sb
+import gigaspoon as gs
 
 from flask import (Blueprint, g)
 from .auth import login_required, admin_required
@@ -33,7 +33,7 @@ blueprint.add_url_rule("/new_cert/<arn>",
 
 class Register(AppRouteView):
     decorators = [login_required,
-                  sb.validator(sb.v.LengthValidator("device_name", min=8))]
+                  gs.validator(gs.v.LengthValidator("device_name", min=8))]
     redirect_to = "index"
     template_name = "device/register.html"
 
@@ -56,7 +56,7 @@ blueprint.add_url_rule("/register", view_func=Register.as_view("register"))
 
 class FromArn(AppRouteView):
     decorators = [admin_required,
-                  sb.validator(sb.v.ExistsValidator("device_arn"))]
+                  gs.validator(gs.v.ExistsValidator("device_arn"))]
     route = "device.from_arn"
     template_name = "device/from_arn.html"
 

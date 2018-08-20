@@ -17,5 +17,5 @@ setup(
     package_data={
         "noticast_web": files
     },
-    install_requires=['flask', 'flask_sqlalchemy', 'spudbucket',
+    install_requires=['flask', 'flask_sqlalchemy', 'gigaspoon',
                       'boto3', 'psycopg2-binary', 'pymysql', 'raven[flask]'])

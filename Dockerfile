@@ -10,7 +10,7 @@ RUN apt-get install -y yarn
 RUN cd /app && yarn install
 
 RUN pip3 install flask-sqlalchemy
-RUN pip3 install git+https://github.com/RyanSquared/spudbucket
+RUN pip3 install git+https://github.com/RyanSquared/gigaspoon
 RUN pip3 install boto3
 RUN pip3 install psycopg2
 RUN pip3 install pymysql
