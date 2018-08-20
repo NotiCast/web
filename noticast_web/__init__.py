@@ -77,7 +77,7 @@ def create_app(test_config: dict = None) -> Flask:
         value = response("Error for form submission (%s)" % e,
                          payload={"type": str(type(e)), "msg": repr(e)},
                          status_code=status_code)
-        if is_json():
+        if is_json(request):
             return jsonify(value), status_code
         return redirect(request.url_rule.rule)
 
