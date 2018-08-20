@@ -2,7 +2,7 @@ import uuid
 
 import spudbucket as sb
 
-from flask import (Blueprint, session)
+from flask import (Blueprint, g)
 from .auth import login_required, admin_required
 from .iot_util import get_things, Thing
 from .models import Device, db
@@ -42,7 +42,7 @@ class Register(AppRouteView):
         thing = Thing("", uuid.uuid4().hex)
         thing.sync(create=True)
         device = Device(arn=thing.arn,
-                        client_id=session["client_id"],
+                        client_id=g.user.client_id,
                         name=name)
         db.session.add(device)
         db.session.commit()
@@ -65,7 +65,7 @@ class FromArn(AppRouteView):
         for thing in (thing for thing in get_things() if thing.arn == arn):
             thing.sync()
             device = Device(arn=arn,
-                            client_id=session["client_id"],
+                            client_id=g.user.client_id,
                             name=thing.name)
             db.session.add(device)
             db.session.commit()
