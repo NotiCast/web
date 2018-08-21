@@ -65,7 +65,7 @@ def create_app(test_config: dict = None) -> Flask:
     from .iot_util import miniarn
     app.jinja_env.filters["miniarn"] = miniarn
 
-    @app.context_processor()
+    @app.context_processor
     def inject_miniarn():
         return dict(miniarn=miniarn)
 
