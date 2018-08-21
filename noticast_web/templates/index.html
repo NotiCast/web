@@ -17,7 +17,7 @@
       <td>{{ device.arn | miniarn }}</td>
       <td style="text-align: right">
         <a class="button" href="{{ url_for(
-            "device.new_cert", arn=miniarn(device.arn) }}">
+            "device.new_cert", arn=miniarn(device.arn)) }}">
           Regen Credentials
         </a>
       </td>
