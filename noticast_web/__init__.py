@@ -62,10 +62,17 @@ def create_app(test_config: dict = None) -> Flask:
     app.register_blueprint(device.blueprint)
     app.register_blueprint(group.blueprint)
 
+    from .iot_util import miniarn
+    app.jinja_env.filters["miniarn"] = miniarn
+
+    @app.context_processor()
+    def inject_miniarn():
+        return dict(miniarn=miniarn)
+
     @app.before_request
     def redirect_insecure():
         if not request.is_secure:
-            return redirect(request.url.replace('http://', 'https://'))
+            return redirect(request.url.replace("http://", "https://"))
 
     @app.errorhandler(403)
     def not_authorized(e):

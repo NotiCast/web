@@ -6,6 +6,10 @@ import boto3
 iot = boto3.client('iot')
 
 
+def miniarn(arn):
+    return arn.split(":")[-1].split("/")[-1]
+
+
 def unpaginate(method, element_name):
     nextToken = None
     while True:
@@ -184,9 +188,9 @@ class Thing(object):
     def gen_credentials(self):
         # get current principals for thing
         principals = iot.list_thing_principals(thingName=self.name)
-        short_name = self.arn.split("/")[-1]
+        short_name = miniarn(self.arn)
         for cert in principals["principals"]:
-            cert_id = cert.split("/")[-1]
+            cert_id = miniarn(cert)
             iot.update_certificate(certificateId=cert_id, newStatus="INACTIVE")
             iot.detach_thing_principal(thingName=short_name, principal=cert)
             iot.delete_certificate(certificateId=cert_id, forceDelete=True)

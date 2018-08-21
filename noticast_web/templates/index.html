@@ -14,10 +14,10 @@
     {% for device in devices %}
     <tr>
       <th>{{ device.name }}</th>
-      <td>{{ device.arn }}</td>
+      <td>{{ device.arn | miniarn }}</td>
       <td style="text-align: right">
         <a class="button" href="{{ url_for(
-            "device.new_cert", arn=device.arn.split("/")[-1]) }}">
+            "device.new_cert", arn=miniarn(device.arn) }}">
           Regen Credentials
         </a>
       </td>

@@ -39,11 +39,11 @@
 {% for group in groups %}
     <tr>
       <th>{{ group.name }}</th>
-      <td>{{ group.arn }}</td>
+      <td>{{ group.arn | miniarn }}</td>
       <td>{{ group.devices | length }}</td>
       <td style="text-align: right">
         <a class="button" href="{{ url_for(
-          "group.manage", arn=group.arn.split("/")[-1]) }}">Manage</a>
+          "group.manage", arn=miniarn(group.arn)) }}">Manage</a>
       </td>
     </tr>
 {% endfor %}
