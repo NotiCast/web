@@ -7,14 +7,12 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='node_modules/bulma/css/bulma.min.css') }}">
     <title>NotiCast</title>
     <style>
-    ul {
-      list-style: disc inside;
+    /* Bulma CSS override */
+    section.section {
+      padding-bottom: inherit;
     }
-    ol {
-      list-style-position: inside;
-    }
-    section.notifications {
-      padding-top: 3.5rem;
+    secton.section:last-type {
+      padding-bottom: 3.5rem;
     }
     </style>
   </head>
@@ -48,7 +46,7 @@
     </nav>
 {% with messages = get_flashed_messages(category_filter=["notification"]) %}
 {% if messages %}
-    <section class="notifications">
+    <section class="section">
       <div class="container">
 {% for message in messages %}
 {% set message_values = message.split("|") %}
@@ -61,21 +59,50 @@
     </section>
 {% endif %}
 {% endwith %}
-    <script charset="utf-8">
-      let elem = $("button.delete");
-      let count = elem.length;
-      elem.click(function() {
-        $(this).parent("div.notification").remove();
-        if (--count == 0) {
-          $("section.notifications").remove();
-        }
-      });
-    </script>
+    <section class="section" id="dev-mode-message">
+      <div class="container">
+        <article class="message">
+          <div class="message-header">
+            <p>Hello, {{ g.user.username }}</p>
+            <button class="delete close" data-target="#dev-mode-message"></button>
+          </div>
+          <div class="message-body">
+            This software, as well as NotiCast in general, is a project that is
+            under active development. Things might change often, but will
+            attempt to remain consistent to protect user experience. If you
+            encounter something you think might be an issue, do not hesitate
+            to message the developers - it likely is an issue.
+          </div>
+        </article>
+      </div>
+    </section>
     <section class="section">
       <div class="container">
         {% block body %}{% endblock %}
       </div>
     </section>
+    <script>
+      { // Handle closing out of notifications
+        let elem = $("button.delete");
+        let count = elem.length;
+        elem.click(function() {
+          $(this).parent("div.notification").remove();
+          if (--count == 0) {
+            $("section.notifications").remove();
+          }
+        });
+      }
+      $("button.copy").click(function() {
+        let $this = $(this);
+        let $target = $($this.data("target"));
+        let input_elem = $("<input>");
+        $("body").append(input_elem);
+        input_elem.val($target.text()).select();
+        document.execCommand("copy");
+        input_elem.remove();
+      });
+      $("button.close").click((e)=> $($(e.currentTarget).data("target")).remove());
+    </script>
     {% block script %}{% endblock %}
   </body>
 </html>

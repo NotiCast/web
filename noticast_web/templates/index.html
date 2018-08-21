@@ -7,19 +7,22 @@
     <tr>
       <th>Device Name</th>
       <th>Device ARN</th>
-      <th style="width: 10px"></th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
     {% for device in devices %}
     <tr>
       <th>{{ device.name }}</th>
-      <td>{{ device.arn | miniarn }}</td>
+      <td id="device-arn-{{ loop.index }}">{{ device.arn | miniarn }}</td>
       <td style="text-align: right">
-        <a class="button" href="{{ url_for(
-            "device.new_cert", arn=miniarn(device.arn)) }}">
-          Regen Credentials
-        </a>
+        <span class="buttons has-addons is-right">
+          <a class="button" href="{{ url_for(
+              "device.new_cert", arn=miniarn(device.arn)) }}">
+            Regen Credentials
+          </a>
+          <button class="button copy" data-target="#device-arn-{{ loop.index }}">Copy ARN</button>
+        </span>
       </td>
     </tr>
     {% endfor %}
@@ -27,16 +30,17 @@
 </table>
 {% endif %}
 <div class="columns">
-  <div class="column">
+  <div class="column content">
     <!-- Left Column -->
     <p>
       <b>Hello!</b> Welcome to NotiCast - a broadcasting system for sending
-      notifications. Below, you can see some helpful resources:
+      notifications. Below, we'll list some ways you can interact with the
+      devices.
     </p>
 
     <ul>
-      <li><a href="https://github.com/NotiCast/pylon-example" target="_blank">Pylons</a> - How we (and you!) send notifications to devices.</li>
-      <li>i dunno what else lol</li>
+      <li><a href="https://github.com/NotiCast/pylon-example" target="_blank">Pylons</a> - How we (and you!) automate messages</li>
+      <li>Automated emails at <code><b>your-arn</b>@send.noticast.io</code></li>
     </ul>
     <hr>
     <h2 class="title is-h2">What is NotiCast?</h2>
