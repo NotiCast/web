@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="content">
+  <h1 class="title" id="device-setup">Device Management</h1>
+  <div class="message is-warning" id="device-setup-ansible">
+    <div class="message-header">
+      <p></p>
+      <span class="delete close" data-target="#device-setup-ansible"></span>
+    </div>
+    <div class="message-body">
+      <p>
+        Currently, NotiCast uses an Ansible-based deployment mechanism to
+        install required software for devices. If you need to install
+        Ansible, you can do the following: <code>$ pip3 install --user
+        ansible</code>. Once the command is finished, you should now have
+        <code>ansible</code> and <code>ansible-playbook</code> in your path.
+        If you do not, make sure that <code>~/.local/bin</code> is in your
+        system path.
+      </p>
+    </div>
+  </div>
+  <h3 class="subtitle" id="initial-device-setup">Initial Device Setup</h3>
+  <p>
+    If this is your first time setting up a device, you will need an SSH
+    accessible Raspberry Pi, preferably running Debian Stretch. Once you have
+    the device online and hooked up to the local network, it should print an
+    IP address to the output. If you do not have this, try to use another
+    method to get the device IP.
+  </p>
+  <p>
+    Additionally, you will need the repositories that we use to manage the
+    devices, which is located
+    <a href="https://github.com/NotiCast/device-bootstrap" target="_blank">here</a>.
+    The repository must be cloned "recursively" (by passing the
+    <code>--recursive</code> to <code>git pull</code>) in order to pull the
+    requred dependencies.
+  </p>
+  <p>
+    Once you have your device IP, should now be able to run the Makefile, which
+    will load Ansible and point it at the device. You can do so by running:
+    <code>make deploy DEVICE_IP="10.1.30.112"</code>, replacing the example IP
+    address with the IP address of your device. Optionally, if your device has
+    a custom username or password, you can customize the variables found in
+    <code>make echo</code> to reflect your device configuration.
+  </p>
+  <p>
+    From here, you should now have a device capable of running NotiCast.
+    You should now get a flash drive and load them with credentials from a
+    device from the website, or manually place the credentials files in
+    <code>/home/pi/.config/noticast/connection/</code>.
+  </p>
+  <p>
+    From this point, you can restart the device, and start using it like any
+    other NotiCast device.
+  </p>
+  <h3 class="subtitle" id="further-development">Further Development</h3>
+  <p>
+    <b>Note:</b>
+    The project is structured in a way that the installation and update
+    mechanism are separate from the code itself. If you have any Python code
+    dependencies, they should be installed in the <code>iot-core</code> repo.
+    If you have any Debian or package manager dependencies, they should be
+    installed in the <code>device-bootstrap</code> repo.
+  </p>
+  <p>
+    Surprisingly, you made it this far. I'm not sure what else to put here. If
+    you're going to tinker with the devices, there's not really much you need
+    to know.
+  </p>
+</div>
+{% endblock %}

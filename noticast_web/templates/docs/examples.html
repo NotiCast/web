@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block body %}
+<!-- vim:set et sw=2 ts=2 foldmethod=marker: -->
+<div class="content columns">
+  <style>
+    [red] { color: red; }
+    [green] { color: green; }
+    [blue] { color: blue; }
+    [gray] { color: gray; }
+  </style>
+  <div class="column is-6">
+    <!-- Python "{{ '{{{' }}" -->
+    <div>
+      <h1 class="title" id="python">Python API Interaction Examples</h1>
+      <p>
+        Interacting with the NotiCast API through Python is made simple through the
+        <a href="http://docs.python-requests.org/en/master/" target="_blank">Requests</a>
+        Python library. Because Requests can easily manage JSON requests, sending a
+        message becomes as simple as a five-line function:
+      </p>
+<pre><code><b>import</b> <span blue>requests</span>
+
+<span red>API_URL</span> = "https://api.noticast.io/send_message"
+
+
+<b>def</b> send_message(<span green>message</span>, <span green>target</span>, <span green>url</span>=<span red>API_URL</span>):
+    <span red>data</span> = {"message": <span class="green">message</span>, "target": <span class="green">target</span>}
+    <span red>output</span> = <span blue>requests</span>.post(<span green>url</span>, json=<span green>data</span>)
+    <span red>output</span>.raise_for_status()
+    <b>return</b> <span red>output</span>.json()
+</code></pre>
+
+      <p>
+        Because you as the developer are directly interacting with the API, all
+        variables to the API will be directly accessible with no overhead or
+        requirement of external dependencies to update.
+      </p>
+    </div>
+    <!-- {{ '}}}' }} -->
+    <hr>
+    <!-- Shell "{{ '{{{' }}" -->
+    <div>
+      <h1 class="title" id="shell">cURL CLI API Interaction Examples</h1>
+      <p>
+        cURL is a library often used in shell scripts and simple automation,
+        which makes it an important resource for NotiCast. Shell is a lot more
+        different than other languages, and the example below is rather
+        comprehensive, so don't worry if you don't get it. All that matters is
+        the cURL invocation.
+      </p>
+      <p>
+        There are parts of the code where the "'" quote comes up. This is due
+        to a limitation of shell scripts where it is hard to get variables
+        inside of a single-quote string, but requires escaping a double-quote
+        when using a double-quote. The generated value is, eventually, JSON.
+      </p>
+<pre><code>
+<span red>API_URL</span>=${<span green>API_URL</span>:-https://api.noticast.io/send_message}
+<span blue>send_message</span>() {
+  <span gray># First argument: Quoted message<span>
+  <span gray># Second argument: MiniARN</span>
+  <span blue>curl</span> -v --data-binary '{"message": "'"<span green>$1</span>"'",
+    "target": "'"<span green>$2</span>"'"}' <span red>$API_URL</span>
+}
+
+<span gray># Example usage</span>
+send_message
+</code></pre>
+    </div>
+    <!-- {{ '}}}' }} -->
+  </div>
+  <div class="column is-6">
+    <!-- Lua "{{ '{{{' }}" -->
+    <div>
+      <h1 class="title" id="lua">Lua API Interaction Examples</h1>
+      <p>
+        A new, popular library for Lua,
+        <a href="https://github.com/daurnimator/lua-http" target="_blank">lua-http</a>,
+        offers a simple way to interact with HTTP interfaces. It's not as
+        simple as Requests (as shown above with Python) but it'll work for the
+        purpose of sending a message.
+      </p>
+<pre><code><b>local</b> <span blue>http_request</span> = <span blue>require</span>("http.request")
+<b>local</b> <span blue>cjson</span> = <span blue>require</span>("cjson")
+
+<b>local</b> <span red>api_url</span> = "https://api.noticast.io/send_message"
+
+
+<b>local function</b> send_message(<span green>message</span>, <span green>target</span>, <span green>url</span>)
+  <b>if</b> <span green>url</span> == <span red>nil</span> <b>then</b>
+    <span green>url</span> = <span red>api_url</span>
+  <b>end</b>
+  <b>local</b> <span green>new_request</span> = <span blue>http_request</span>.<span blue>new_from_uri</span>(<span green>url</span>)
+  <span green>new_request</span>.<span green>headers</span>:<span blue>upsert</span>(":method", "POST")
+  <b>local</b> <span green>headers</span>, <span green>stream</span> = <span green>new_request</span>:<span blue>go</span>()
+  <b>local</b> <span green>body</span> = <span green>stream</span>:<span blue>get_body_as_string</span>()
+  <b>for</b> <span blue>k</span>, <span blue>v</span> <b>in</b> <span green>headers</span>:<span blue>each</span>() <b>do</b>
+    <span blue>print</span>(<span green>k</span>, <span green>v</span>)
+  <b>end</b>
+  <span blue>print</span>(<span green>body</span>)
+<b>end</b>
+</code></pre>
+
+      <p>
+        Similarly to Python, this library also interacts directly with the HTTP
+        API and should have no issue in upgrading dependencies between API
+        updates.
+      </p>
+    </div>
+    <!-- {{ '}}}' }} -->
+  </div>
+</div>
+{% endblock %}

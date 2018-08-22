@@ -53,14 +53,12 @@ def create_app(test_config: dict = None) -> Flask:
 
     # extensions
     from .app_view import AppRouteView, response, is_json
-    from . import models
-    models.init_app(app)
-
-    # blueprints
-    from . import auth, device, group
-    app.register_blueprint(auth.blueprint)
-    app.register_blueprint(device.blueprint)
-    app.register_blueprint(group.blueprint)
+    from . import auth, device, docs, group, models
+    for item in [auth, device, docs, group, models]:
+        if getattr(item, "init_app", None) is not None:
+            item.init_app(app)
+        if getattr(item, "blueprint", None) is not None:
+            app.register_blueprint(item.blueprint)
 
     from .iot_util import miniarn
     app.jinja_env.filters["miniarn"] = miniarn
@@ -69,10 +67,12 @@ def create_app(test_config: dict = None) -> Flask:
     def inject_miniarn():
         return dict(miniarn=miniarn)
 
-    @app.before_request
-    def redirect_insecure():
-        if not request.is_secure:
-            return redirect(request.url.replace("http://", "https://"))
+    if app.config["ENV"] == "production":
+        # in dev mode, do not enforce HTTPS, as domains are local
+        @app.before_request
+        def redirect_insecure():
+            if not request.is_secure:
+                return redirect(request.url.replace("http://", "https://"))
 
     @app.errorhandler(403)
     def not_authorized(e):

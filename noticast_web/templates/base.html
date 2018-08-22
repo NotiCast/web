@@ -1,4 +1,5 @@
 <!DOCTYPE HTML>
+<!-- vim:set et sw=2 ts=2 ft=htmldjango: -->
 <html>
   <head>
     <meta charset="UTF-8" />
@@ -17,6 +18,9 @@
     secton.section:last-type {
       padding-bottom: 3.5rem;
     }
+    a.para {
+      color: rgba(0, 0, 0, 0.23);
+    }
     </style>
   </head>
   <body>
@@ -34,6 +38,18 @@
 {% if session.client_id %}
         <a class="navbar-item" href="{{ url_for('device.register') }}">Add Device</a>
         <a class="navbar-item" href="{{ url_for('group.index') }}">Manage Groups</a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">Developer Resources</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="{{ url_for('docs.index') }}">Documentation</a>
+            <hr class="navbar-divider">
+{% for page in docs_pages %}
+            <a class="navbar-item"
+              href="{{ url_for('docs.page', page=page) }}">
+              {{ page | capitalize }}</a>
+{% endfor %}
+          </div>
+        </div>
         <div class="navbar-end">
           <a class="navbar-item"
              href="{{ url_for('auth.logout') }}">Log Out</a>
@@ -105,6 +121,17 @@
         input_elem.remove();
       });
       $("button.close").click((e)=> $($(e.currentTarget).data("target")).remove());
+      $("[id]").filter(":header").each(function() {
+        // Put a paragraph symbol against any header with an ID, which can link
+        // to the ID of the header
+        let $this = $(this);
+        let elem = $("<a>");
+        elem.attr("href", "#" + $this.attr("id"));
+        elem.addClass("para");
+        elem.html(" &para;");
+        $this.append(elem);
+        console.log(elem);
+      })
     </script>
     {% block script %}{% endblock %}
     <footer class="footer">
