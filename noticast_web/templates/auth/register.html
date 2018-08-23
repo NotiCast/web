@@ -27,15 +27,15 @@ $(document).ready(()=> {
 <div class="column is-narrow" style="width: 300px;">
   <form action="{{ url_for('auth.register') }}" method="post" accept-charset="utf-8">
     <div class="field">
-      <label class="label">Username</label>
+      <label class="label"><u>U</u>sername</label>
       <input class="input" type="text" name="username" id="username" value=""
-       minlength="{{ g.username_validator.min }}" required
-       maxlength="{{ g.username_validator.max }}"/>
+       minlength="{{ g.username_validator.min }}" required accesskey="u"
+       maxlength="{{ g.username_validator.max }}" autofocus />
     </div>
     <div class="field">
-      <label class="label">Password</label>
+      <label class="label"><u>P</u>assword</label>
       <input class="input" type="password" name="password" id="password" value=""
-       minlength="{{ g.password_validator.min }}" required
+       minlength="{{ g.password_validator.min }}" required accesskey="p"
        maxlength="{{ g.password_validator.max }}"/>
     </div>
 {% for value in g["i-am_validator"].options %}

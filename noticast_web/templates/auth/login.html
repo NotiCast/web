@@ -8,16 +8,16 @@
 <div class="column is-narrow" style="width: 300px;">
   <form action="{{ url_for('auth.login') }}" method="post" accept-charset="utf-8">
     <div class="field">
-      <label class="label">Username</label>
-      <input class="input" type="text" name="username" id="username" value="" />
+      <label class="label"><u>U</u>sername</label>
+      <input class="input" type="text" name="username" id="username" value="" accesskey="u" autofocus />
     </div>
     <div class="field">
-      <label class="label">Password</label>
-      <input class="input" type="password" name="password" id="password" value="" />
+      <label class="label"><u>P</u>assword</label>
+      <input class="input" type="password" name="password" id="password" value="" accesskey="p"/>
     </div>
     <div class="field">
       <div class="control">
-        <input class="button is-link" type="submit">
+        <input class="button is-link" type="submit" accesskey="s">
       </div>
     </div>
   </form>

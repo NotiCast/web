@@ -5,13 +5,15 @@
   <div class="field">
     <label class="label">Group Name</label>
     <input class="input" type="text" name="name_or_arn" id="group" value=""
-      minlength="{{ g.name_or_arn_validator.min }}" required>
+      minlength="{{ g.name_or_arn_validator.min }}" required autofocus>
   </div>
 {% if g.user.client.is_admin %}
 {% for type in g.group_type_validator.options %}
   <div class="field">
     <label class="radio">
-      <input type="radio" value="{{ type }}" name="{{ g.group_type_validator.name }}" id="{{ g.group_type_validator.name }}" checked>
+      <input type="radio" value="{{ type }}"
+        name="{{ g.group_type_validator.name }}"
+        id="{{ g.group_type_validator.name }}" checked>
       Group {{ type }}
     </label>
   </div>

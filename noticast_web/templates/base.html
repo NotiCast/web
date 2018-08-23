@@ -27,17 +27,17 @@
     <nav class="navbar has-background-white-ter" role="navigation" aria-label="main navigation">
       <div class="navbar-brand">
 {% if session.client_id %}
-        <a class="navbar-item" href="/">NotiCast // {{ g.user.username }}</a>
+        <a class="navbar-item" href="/" accesskey="n"><u>N</u>otiCast // {{ g.user.username }}</a>
 {% else %}
-        <a class="navbar-item" href="/">NotiCast</a>
+        <a class="navbar-item" href="/" accesskey="n"><u>N</u>otiCast</a>
 {% endif %}
       </div>
       <div class="navbar-menu">
-        <a class="navbar-item" href="{{ url_for('auth.login') }}">Log In</a>
-        <a class="navbar-item" href="{{ url_for('auth.register') }}">Register</a>
+        <a class="navbar-item" href="{{ url_for('auth.login') }}" accesskey="l"><u>L</u>og In</a>
+        <a class="navbar-item" href="{{ url_for('auth.register') }}" accesskey="r"><u>R</u>egister</a>
 {% if session.client_id %}
-        <a class="navbar-item" href="{{ url_for('device.register') }}">Add Device</a>
-        <a class="navbar-item" href="{{ url_for('group.index') }}">Manage Groups</a>
+        <a class="navbar-item" href="{{ url_for('device.register') }}" accesskey="d">Add&nbsp;<u>D</u>evice</a>
+        <a class="navbar-item" href="{{ url_for('group.index') }}" accesskey="g">Manage&nbsp;<u>G</u>roups</a>
         <div class="navbar-item has-dropdown is-hoverable">
           <a class="navbar-link" href="#">Developer Resources</a>
           <div class="navbar-dropdown">
@@ -52,7 +52,7 @@
         </div>
         <div class="navbar-end">
           <a class="navbar-item"
-             href="{{ url_for('auth.logout') }}">Log Out</a>
+             href="{{ url_for('auth.logout') }}" accesskey="o">Log&nbsp;<u>O</u>ut</a>
         </div>
 {% endif %}
       </div>
