@@ -54,6 +54,7 @@
     - name: Build NotiCast Web from source
       shell: |
         git clone https://github.com/NotiCast/web {{ web_build_dir.path }}
+        git checkout {{ noticast_web_version }}
         yarn install
         pip3 install --upgrade .
       args:
