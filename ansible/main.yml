@@ -69,8 +69,15 @@
       copy:
         src: noticast_web.service
         dest: /etc/systemd/system/noticast_web.service
+      register: systemd_unit
+    - systemd: daemon_reload=true
+      when: systemd_unit.changed
     - name: Enable NotiCast Web systemd unit
       systemd:
         name: noticast_web
         state: started
         enabled: true
+    - name: Reload uWSGI/NotiCast
+      systemd:
+        name: noticast_web
+        state: reloaded

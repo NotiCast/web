@@ -3,7 +3,12 @@ Description=NotiCast Website
 
 [Service]
 EnvironmentFile=/etc/noticast.conf
-ExecStart=/usr/local/bin/uwsgi --http :80 --module noticast_web --callable create_app()
+ExecStart=/usr/local/bin/uwsgi --http :80 \
+	--module noticast_web \
+	--callable create_app() \
+	--processes 4 \
+	--master
+ExecReload=/bin/kill -s HUP $MAINPID
 
 [Install]
 WantedBy=multi-user.target
