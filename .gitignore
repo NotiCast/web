@@ -109,3 +109,4 @@ config.*.env
 
 ansible/files/config.env
 ansible/vars/terraform.json
+*.retry
