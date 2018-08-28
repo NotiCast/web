@@ -3,7 +3,7 @@
 {% block body %}
 <form action="{{ url_for("group.index") }}" method="post" style="width: 300px;">
   <div class="field">
-    <label class="label">Group Name</label>
+    <label class="label">New Group Name</label>
     <input class="input" type="text" name="name_or_arn" id="group" value=""
       minlength="{{ g.name_or_arn_validator.min }}" required autofocus>
   </div>
@@ -27,7 +27,7 @@
     </div>
   </div>
 </form>
-<br>
+<hr>
 <table class="table is-fullwidth is-bordered is-striped">
   <thead>
     <tr>
