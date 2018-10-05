@@ -68,6 +68,8 @@ blueprint.add_url_rule("/", view_func=Index.as_view("index"))
 
 
 class Manage(AppRouteView):
+    decorators = [login_required]
+
     route = "group.manage"
     template_name = "group/manage.html"
 
