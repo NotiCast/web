@@ -21,7 +21,8 @@
               "device.new_cert", arn=miniarn(device.arn)) }}">
             Regen Credentials
           </a>
-          <button class="button" @click="copy" data-target="#device-arn-{{ loop.index }}">Copy ARN</button>
+          <button class="button" @click="copy_target"
+            data-target="#device-arn-{{ loop.index }}">Copy ARN</button>
         </span>
       </td>
     </tr>

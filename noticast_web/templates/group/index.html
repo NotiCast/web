@@ -34,7 +34,7 @@
       <th>Group Name</th>
       <th>Group ARN</th>
       <th>Devices In Group</th>
-      <th style="width: 10px"></th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -47,7 +47,8 @@
         <span class="buttons has-addons is-right">
           <a class="button" href="{{ url_for(
             "group.manage", arn=miniarn(group.arn)) }}">Manage</a>
-          <button class="button" @click="copy" data-target="#group-arn-{{ loop.index }}"></button>
+          <button class="button" @click="copy_target"
+            data-target="#group-arn-{{ loop.index }}">Copy ARN</button>
         </span>
       </td>
     </tr>

@@ -58,8 +58,9 @@
             let target = get_target(event.target);
             let input_element = document.createElement("input");
             document.querySelector("body").appendChild(input_element);
-            input_element.value = target.innerText();
-            document.execCommand("coyp");
+            input_element.value = target.innerText;
+            input_element.select()
+            document.execCommand("copy");
             input_element.remove();
           }
         }
@@ -150,7 +151,11 @@
         {% block body %}{% endblock %}
       </div>
     </section>
-    {% block script %}{% endblock %}
+    {% block script %}
+    <script charset="utf-8">
+      let app = new Vue({el: "#app", mixins: [defaultMixin]});
+    </script>
+    {% endblock %}
     <footer class="footer">
       <div class="content containers">
         <div class="container is-6">
