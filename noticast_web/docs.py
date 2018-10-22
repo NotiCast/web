@@ -21,4 +21,4 @@ blueprint.add_url_rule("/<page>", view_func=DocsPage.as_view("page"))
 def init_app(app):
     @app.context_processor
     def load_docs_pages():
-        return dict(docs_pages=["examples"])
+        return dict(docs_pages=["examples", "web"])

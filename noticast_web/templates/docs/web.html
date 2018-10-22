@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="content">
+  <h1>The NotiCast Website</h1>
+  <p>
+    This is a somewhat informal documentation coming from the main author of
+    the website, Ryan. I'll be discussing some things about the core of the
+    website and how development of the website takes place. First and foremost,
+    the website runs perfectly both without jQuery and without JavaScript in
+    general. This is to improve performance and to get rid of issues such as
+    the <a href="https://www.youtube.com/watch?v=ESWR4Tzx-Pk" target="_blank">
+      dynamically loading refridgetator</a>. This is a practical problem for
+    many websites, so despite the fact I'm using a client-side rendering
+    library, the first render of content *must* be on the server.
+  </p>
+  <h3 class="subtitle">The Backend</h3>
+  <p>
+    NotiCast runs on a custom data-driven framework, atop Flask, called the App
+    Route Framework. This was designed to allow for easy integration with JSON
+    APIs and ensures that each part of the design is separated into either a
+    view (as an HTML template or JSON), a model (the database tables), and
+    sometimes a controller.
+  </p>
+  <p>
+    Each route is defined using a custom MethodView extension from Flask known
+    as <code>AppRouteView</code>. Your route, when defined, should provide the
+    following information:
+  </p>
+  <ul>
+    <li><strong>decorators[]:</strong> List of function decorators, such as
+      <code>auth.login_required</code> or a Gigaspoon validation rule</li>
+    <li><strong>template_name:</strong> String value, name of the Jinja2 HTML
+      template that will be populated with the <code>populate</code> info</li>
+    <li><strong>route:</strong> Name of the route the view will be registered
+      as; used after a POST (doesn't work with <code>redirect_to</code>)</li>
+    <li><strong>redirect_to:</strong> Name of the route the view will redirect
+      to after a POST (doesn't work with <code>route</code>)</li>
+    <li>
+      <strong>populate(self, ...):</strong> Get all the data from database
+      models which will then be used on the template; positional arguments
+      from <a href="http://werkzeug.pocoo.org/docs/0.14/routing/"
+        target="_blank">werkzeug routing rules</a></li>
+    <li>
+      <strong>handle_post(self, values):</strong> Take incoming values from a
+      request and handle them appropriately; should return a response from
+      <code>app_view.response()</code></li>
+  </ul>
+  <h3 class="subtitle">Example: docs.py</h3>
+<pre><code>from flask import Blueprint
+from .app_view import AppRouteView
+
+blueprint = Blueprint("docs", __name__, url_prefix="/docs")
+
+
+class Index(AppRouteView):
+    template_name = "docs/index.html"
+
+
+class DocsPage(AppRouteView):
+    def populate(self, page):
+        self.template_name = "docs/%s.html" % page
+        return {}
+
+
+blueprint.add_url_rule("/", view_func=Index.as_view("index"))
+blueprint.add_url_rule("/<page>", view_func=DocsPage.as_view("page"))
+
+
+def init_app(app):
+    @app.context_processor
+    def load_docs_pages():
+        return dict(docs_pages=["examples", "web"])</code></pre>
+  <h3 class="subtitle">Example: device.py</h3>
+<pre><code>import uuid
+
+import gigaspoon as gs
+
+from flask import (Blueprint, g)
+from .auth import login_required, admin_required
+from .iot_util import get_things, Thing
+from .models import Device, db
+from .app_view import AppRouteView, response
+
+blueprint = Blueprint("device", __name__, url_prefix="/device")
+
+
+class NewCert(AppRouteView):
+    decorators = [login_required]
+    template_name = "device/new_credentials.html"
+
+    def populate(self, arn):
+        thing = Thing("", arn).sync()
+        cert, (pubkey, privkey), endpoint = thing.gen_credentials()
+        return {
+            "cert": cert,
+            "pubkey": pubkey,
+            "privkey": privkey,
+            "endpoint": endpoint["endpointAddress"],
+            "arn": thing.arn
+        }
+
+
+blueprint.add_url_rule("/new_cert/<arn>",
+                       view_func=NewCert.as_view("new_cert"))
+
+
+class Register(AppRouteView):
+    decorators = [login_required,
+                  gs.validator(gs.v.Length("device_name", min=8))]
+    redirect_to = "index"
+    template_name = "device/register.html"
+
+    def handle_post(self, values):
+        name = values["device_name"]
+        thing = Thing("", uuid.uuid4().hex)
+        thing.sync(create=True)
+        device = Device(arn=thing.arn,
+                        client_id=g.user.client_id,
+                        name=name)
+        db.session.add(device)
+        db.session.commit()
+
+        return response("Device successfully created: %s" % name,
+                        payload={"name": name, "arn": thing.arn})
+
+
+blueprint.add_url_rule("/register", view_func=Register.as_view("register"))
+
+
+class FromArn(AppRouteView):
+    decorators = [admin_required,
+                  gs.validator(gs.v.Exists("device_arn"))]
+    route = "device.from_arn"
+    template_name = "device/from_arn.html"
+
+    def handle_post(self, values):
+        arn = values["device_arn"]
+        for thing in (thing for thing in get_things() if thing.arn == arn):
+            thing.sync()
+            device = Device(arn=arn,
+                            client_id=g.user.client_id,
+                            name=thing.name)
+            db.session.add(device)
+            db.session.commit()
+            self.redirect_to = "index"
+            return response("Device successfully created: %s" % thing.name,
+                            payload={"name": thing.name, "arn": thing.arn})
+        else:
+            return response("Device was not found", status_code=404)
+
+
+blueprint.add_url_rule("/from_arn", view_func=FromArn.as_view("from_arn"))</code></pre>
+  <h3 class="subtitle">The Frontend</h3>
+  <p>
+    For the frontend, I chose VueJS as the event handler. One day, it will
+    integrate with Jinja2 for a hopefully seamless interaction, so the data can
+    still be rendered server-side, but can also be updated client-side. There
+    must be as little JavaScript interaction as possible; all things that
+    interact with JavaScript must have a server-side or in-browser alternative.
+  </p>
+  <p>
+    The "base.html" template that the HTML pages are based off of has some
+    blocks that can be used for adding content. There's a <code>head</code>
+    block for adding in dependencies and stylesheets, a <code>body</code> block
+    which should contain the bulk of your application, and a
+    <code>script</code> block, where you can put a &lt;script&gt; section. The
+    <code>body</code> block is contained within a block with the id "app",
+    which is then used by the default <code>script</code> block to set up VueJS
+    with the default mixins - a method for <code>copy_target</code> and another
+    for <code>close_target</code>, meaning some nonessential JavaScript
+    enhancements are available out of the box by using the VueJS event system,
+    similar to <code>@click="copy_target" data-target="#your-id"</code>.
+  </p>
+  <p>
+    Unfortunately, because of the layers of rendering on this website, it is
+    not practical to look at an example. However, the templates themselves, and
+    specifically <code>auth/register.html</code> are good examples of how to
+    use Jinja2 and VueJS.
+  </p>
+  <h3 class="subtitle">Input Validation</h3>
+  <p>
+    While going through the code for the website, you have probably seen a
+    variable similar to <code>g.username_validator</code>. This is a Gigaspoon
+    validator. Using Gigaspoon validators makes it easy to validate on both
+    the frontend and the backend, a set of requirements for a route. For
+    example, the user registration route has a username validator. This lets
+    the system generating the frontend have the same values that would be
+    required on the backend. Similarly, on the same page, there is a validator
+    for a set of radio buttons which can be iterated over for each button.
+  </p>
+  <p>
+    When working on the backend for the application, each app view has a list
+    of values called the `decorators`. These are applied to every incoming
+    request, meaning we can stack all our validation options there. As an
+    example, one of the simplest validators is checking how long a string is:
+    <code>gs.validator(gs.v.Length("option_name", min=8))</code>. You can add
+    that to your decorators, and now you have a value which will be validated
+    on POST requests. You can then use the value inside Jinja2 templates by
+    accessing <code>g.option_name_validator.min</code>, which is automatically
+    populated on requests.
+  </p>
+</div>
+{% endblock %}
