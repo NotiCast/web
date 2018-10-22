@@ -1,14 +1,17 @@
 {% extends "base.html" %}
 
+{% block head %}
+<style>
+  [red] { color: red; }
+  [green] { color: green; }
+  [blue] { color: blue; }
+  [gray] { color: gray; }
+</style>
+{% endblock %}
+
 {% block body %}
 <!-- vim:set et sw=2 ts=2 foldmethod=marker: -->
 <div class="content columns">
-  <style>
-    [red] { color: red; }
-    [green] { color: green; }
-    [blue] { color: blue; }
-    [gray] { color: gray; }
-  </style>
   <div class="column is-6">
     <!-- Python "{{ '{{{' }}" -->
     <div>
