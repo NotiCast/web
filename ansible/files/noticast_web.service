@@ -7,6 +7,7 @@ ExecStart=/usr/local/bin/uwsgi --http :80 \
 	--module noticast_web \
 	--callable create_app() \
 	--processes 4 \
+	--wsgi-disable-file-wrapper \
 	--master
 ExecReload=/bin/kill -s HUP $MAINPID
 
