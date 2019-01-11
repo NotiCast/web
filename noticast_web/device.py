@@ -17,7 +17,7 @@ def generate_zip_file_from_dict(input):
     output_file = io.BytesIO()
     zf = zipfile.ZipFile(output_file, "w", compression=zipfile.ZIP_DEFLATED)
 
-    for filename, content in ((x, input[x]) for x in input):
+    for filename, content in input.items():
         zf.writestr(filename, content)
 
     zf.close()
