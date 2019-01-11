@@ -43,7 +43,7 @@ class NewCert(AppRouteView):
                 })
                 return send_file(f, mimetype="application/zip",
                                  as_attachment=True,
-                                 attachment_name="credentials.zip")
+                                 attachment_filename="credentials.zip")
         return super().get(arn, *args, **kwargs)
 
     def populate(self, arn):
