@@ -18,8 +18,7 @@ def generate_zip_file_from_dict(input):
     zf = zipfile.ZipFile(output_file, "w")
 
     for filename, content in ((x, input[x]) for x in input):
-        with zf.open(filename, "w") as f:
-            f.write(content)
+        zf.writestr(filename, content)
 
     zf.close()
     output_file.seek(0)
@@ -33,7 +32,6 @@ class NewCert(AppRouteView):
     def get(self, arn, *args, **kwargs):
         format = request.args.get("format")
         if format is not None:
-            print("format:", format)
             # Custom format supplied in GET parameters
             if format == "zip":
                 values = self.populate(arn)
