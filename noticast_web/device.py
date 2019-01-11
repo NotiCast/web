@@ -33,6 +33,7 @@ class NewCert(AppRouteView):
     def get(self, arn, *args, **kwargs):
         format = request.args.get("format")
         if format is not None:
+            print("format:", format)
             # Custom format supplied in GET parameters
             if format == "zip":
                 values = self.populate(arn)
@@ -45,8 +46,7 @@ class NewCert(AppRouteView):
                 return send_file(f, mimetype="application/zip",
                                  as_attachment=True,
                                  attachment_name="credentials.zip")
-        else:
-            super().get(arn, *args, **kwargs)
+        return super().get(arn, *args, **kwargs)
 
     def populate(self, arn):
         thing = Thing("", arn).sync()
