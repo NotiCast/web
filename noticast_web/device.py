@@ -15,7 +15,7 @@ blueprint = Blueprint("device", __name__, url_prefix="/device")
 
 def generate_zip_file_from_dict(input):
     output_file = io.BytesIO()
-    zf = zipfile.ZipFile(output_file, "w")
+    zf = zipfile.ZipFile(output_file, "w", compression=zipfile.ZIP_DEFLATED)
 
     for filename, content in ((x, input[x]) for x in input):
         zf.writestr(filename, content)
