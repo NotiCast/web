@@ -36,7 +36,7 @@ class NewCert(AppRouteView):
             if format == "zip":
                 values = self.populate(arn)
                 f = generate_zip_file_from_dict({
-                    "cert.crt": values["cert"],
+                    "cert.crt": values["cert"]["pem"],
                     "key": values["privkey"],
                     "iot-endpoint": values["endpoint"],
                     "device-arn": values["arn"]
