@@ -65,6 +65,7 @@
       template:
         src: config.env.j2
         dest: /etc/noticast.conf
+      register: noticast_env_file
     - name: Copy NotiCast Web systemd unit
       copy:
         src: noticast_web.service
@@ -80,4 +81,4 @@
     - name: Reload uWSGI/NotiCast
       systemd:
         name: noticast_web
-        state: reloaded
+        state: "{{ 'restarted' if noticast_env_file.changed else 'reloaded' }}"
