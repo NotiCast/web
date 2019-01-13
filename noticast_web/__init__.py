@@ -45,6 +45,8 @@ def create_app(test_config: dict = None) -> Flask:
         else:
             app.config[item] = value
 
+    print(app.config)
+
     # Ensure the instance exists
     try:
         os.makedirs(app.instance_path)
