@@ -27,23 +27,20 @@ def create_app(test_config: dict = None) -> Flask:
     if test_config is not None:
         app.config.from_mapping(test_config)
 
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
-
     values = {
         "instance": app.instance_path
     }
 
-    for item in ["SQLALCHEMY_DATABASE_URI"]:
-        value = os.environ.get(item)
-        if value is None:
-            print("No config for: %s" % item)
-            continue
-        elif value.lower() in ("true", "false"):
-            app.config[item] = value == "true"
+    def add(key, value):
+        if value.lower() in ("true", "false"):
+            app.config[key] = value == "true"
         elif value[:7] == "FORMAT:":
-            app.config[item] = value[7:].format(**values)
+            app.config[key] = value[7:].format(**values)
         else:
-            app.config[item] = value
+            app.config[key] = value
+
+    for item in filter(lambda x: x[:6] == "FLASK_", os.environ):
+        app.config[item[6:]] = os.environ[item]
 
     print(os.environ)
     print(app.config)
