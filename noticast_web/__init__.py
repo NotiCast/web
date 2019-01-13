@@ -33,7 +33,7 @@ def create_app(test_config: dict = None) -> Flask:
         "instance": app.instance_path
     }
 
-    for item in ["SECRET_KEY", "DEBUG", "SQLALCHEMY_DATABASE_URI"]:
+    for item in ["SQLALCHEMY_DATABASE_URI"]:
         value = os.environ.get(item)
         if value is None:
             print("No config for: %s" % item)
@@ -45,6 +45,7 @@ def create_app(test_config: dict = None) -> Flask:
         else:
             app.config[item] = value
 
+    print(os.environ)
     print(app.config)
 
     # Ensure the instance exists
