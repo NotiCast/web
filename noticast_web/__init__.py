@@ -38,7 +38,7 @@ def create_app(test_config: dict = None) -> Flask:
         if value is None:
             print("No config for: %s" % item)
             continue
-        elif value in ("true", "false"):
+        elif value.lower() in ("true", "false"):
             app.config[item] = value == "true"
         elif value[:7] == "FORMAT:":
             app.config[item] = value[7:].format(**values)
