@@ -40,6 +40,7 @@ def create_app(test_config: dict = None) -> Flask:
             app.config[key] = value
 
     for item in filter(lambda x: x[:6] == "FLASK_", os.environ):
+        print(item)
         app.config[item[6:]] = os.environ[item]
 
     print(os.environ)
