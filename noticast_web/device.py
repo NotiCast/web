@@ -41,9 +41,13 @@ class NewCert(AppRouteView):
                     "iot-endpoint": values["endpoint"],
                     "device-arn": values["arn"]
                 })
-                return send_file(f, mimetype="application/zip",
-                                 as_attachment=True,
-                                 attachment_filename="credentials.zip")
+                length = f.seek(0, io.SEEK_END)
+                f.seek(0)
+                response = send_file(f, mimetype="application/zip",
+                                     as_attachment=True,
+                                     attachment_filename="credentials.zip")
+                response.headers.add('Content-Length', length)
+                return response
         return super().get(arn, *args, **kwargs)
 
     def populate(self, arn):
