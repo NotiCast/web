@@ -18,8 +18,8 @@
       <td style="text-align: right">
         <span class="buttons has-addons is-right">
           <a class="button" href="{{ url_for(
-              "device.new_cert", arn=miniarn(device.arn)) }}">
-            Regen Credentials
+              "device.new_cert", arn=miniarn(device.arn), format="zip") }}">
+            Download Credentials
           </a>
           <button class="button" @click="copy_target"
             data-target="#device-arn-{{ loop.index }}">Copy ARN</button>
@@ -89,8 +89,8 @@
       <ul>
         <li>You can skip this step if you just want to remake credentials</li>
       </ul>
-      <li>Click the "Regen Credentials" button for the relevant device</li>
-      <li>Copy the <code>cert.crt</code> and <code>key</code> files to the flash drive</li>
+      <li>Click the "Download Credentials" button for the relevant device</li>
+      <li>Unzip the folder and add all the files to the flash drive</li>
       <li>Plug the new flash drive into the device</li>
       <li>Boot (or reboot) your system and play a test message</li>
     </ol>
