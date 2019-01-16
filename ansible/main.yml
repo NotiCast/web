@@ -37,6 +37,7 @@
     - name: Install NodeJS [shell]
       command: lsb_release -cs
       register: debian_version
+      changed_when: false
     - name: Install NodeJS [apt_repository]
       apt_repository:
         repo: deb https://deb.nodesource.com/node_10.x {{ debian_version.stdout }} main
