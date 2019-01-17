@@ -114,4 +114,42 @@ send_message
     <!-- {{ '}}}' }} -->
   </div>
 </div>
+
+
+<h1 class="title" id="Node">Node API Interaction Examples</h1>
+      <p>
+        JavaScript is a ubiquitous language compatible with many browsers and sites,
+	and familiar to virtually every webdev. The Node framework allows a simple,
+	lightweight implementation of JavaScript to interface with the NotiCast devices. 
+      </p>
+<pre><code>
+<span green>'use strict'</span>
+<span red>const</span> request = <span red>require</span>(<span green>'request'</span>)
+request({
+    <span red>url:</span> 'https://api.noticast.io/send_message',
+    <span red>method:</span> 'POST',
+    <span red>headers:</span> {
+      <span green>'x-api-key':</span> <span blue>'&ltDevice/Group ARN&gt'</span>
+    },
+    <span red>body:</span> {
+      <span green>'message':</span> 'An example of a test message. This will be read aloud.',
+      <span green>'target':</span> <span blue>'&ltDevice/Group ARN&gt'</span>
+    },
+    <span red>json:</span> true
+  }, 
+  <span blue>function</span> (err, res, body) {
+    if(<span red>err</span>) {
+      throw <span red>err</span>
+    }
+    else {
+      <span green>console</span>.<span blue>log</span>("Status Code: " + <span red>res</span>.<span blue>statusCode</span>)
+      <span green>console</span>.<span blue>log</span>(<span red>body</span>)
+   }
+})
+
+</code></pre>
+
+
+
+
 {% endblock %}
