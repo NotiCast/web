@@ -6,6 +6,8 @@
   [green] { color: green; }
   [blue] { color: blue; }
   [gray] { color: gray; }
+  [purple] { color: purple; }
+  [pink] { color: pink; }
 </style>
 {% endblock %}
 
@@ -43,34 +45,40 @@
     <!-- {{ '}}}' }} -->
     <hr>
     <!-- Shell "{{ '{{{' }}" -->
-    <div>
-      <h1 class="title" id="shell">cURL CLI API Interaction Examples</h1>
+<div>
+<h1 class="title" id="Node">Node API Interaction Examples</h1>
       <p>
-        cURL is a library often used in shell scripts and simple automation,
-        which makes it an important resource for NotiCast. Shell is a lot more
-        different than other languages, and the example below is rather
-        comprehensive, so don't worry if you don't get it. All that matters is
-        the cURL invocation.
-      </p>
-      <p>
-        There are parts of the code where the "'" quote comes up. This is due
-        to a limitation of shell scripts where it is hard to get variables
-        inside of a single-quote string, but requires escaping a double-quote
-        when using a double-quote. The generated value is, eventually, JSON.
+        JavaScript is a ubiquitous language compatible with many browsers and sites,
+	and familiar to virtually every webdev. The Node framework allows a simple,
+	lightweight implementation of JavaScript to interface with the NotiCast devices. 
       </p>
 <pre><code>
-<span red>API_URL</span>=${<span green>API_URL</span>:-https://api.noticast.io/send_message}
-<span blue>send_message</span>() {
-  <span gray># First argument: Quoted message<span>
-  <span gray># Second argument: MiniARN</span>
-  <span blue>curl</span> -v --data-binary '{"message": "'"<span green>$1</span>"'",
-    "target": "'"<span green>$2</span>"'"}' <span red>$API_URL</span>
-}
-
-<span gray># Example usage</span>
-send_message
+<span green>'use strict'</span>
+<span red>const</span> request = <span red>require</span>(<span green>'request'</span>)
+request({
+    <span red>url:</span> <span green>'https://api.noticast.io/send_message'</span>,
+    <span red>method:</span> <span green>'POST'</span>,
+    <span red>headers:</span> {
+      <span green>'x-api-key':</span> <span purple>'&ltDevice/Group ARN&gt'</span>
+    },
+    <span red>body:</span> {
+      <span green>'message':</span> <span green>'An example of a test message. This will be read aloud.'</span>,
+      <span green>'target':</span> <span purple>'&ltDevice/Group ARN&gt'</span>
+    },
+    <span red>json:</span> true
+  }, 
+  <span blue>function</span> (err, res, body) {
+    if(<span red>err</span>) {
+      throw <span red>err</span>
+    }
+    else {
+      <span green>console</span>.<span blue>log</span>("Status Code: " + <span red>res</span>.<span blue>statusCode</span>)
+      <span green>console</span>.<span blue>log</span>(<span red>body</span>)
+   }
+})
 </code></pre>
-    </div>
+</div>
+    
     <!-- {{ '}}}' }} -->
   </div>
   <div class="column is-6">
@@ -113,38 +121,33 @@ send_message
     </div>
 <hr>
 <div>
-<h1 class="title" id="Node">Node API Interaction Examples</h1>
+      <h1 class="title" id="shell">cURL CLI API Interaction Examples</h1>
       <p>
-        JavaScript is a ubiquitous language compatible with many browsers and sites,
-	and familiar to virtually every webdev. The Node framework allows a simple,
-	lightweight implementation of JavaScript to interface with the NotiCast devices. 
+        cURL is a library often used in shell scripts and simple automation,
+        which makes it an important resource for NotiCast. Shell is a lot more
+        different than other languages, and the example below is rather
+        comprehensive, so don't worry if you don't get it. All that matters is
+        the cURL invocation.
+      </p>
+      <p>
+        There are parts of the code where the "'" quote comes up. This is due
+        to a limitation of shell scripts where it is hard to get variables
+        inside of a single-quote string, but requires escaping a double-quote
+        when using a double-quote. The generated value is, eventually, JSON.
       </p>
 <pre><code>
-<span green>'use strict'</span>
-<span red>const</span> request = <span red>require</span>(<span green>'request'</span>)
-request({
-    <span red>url:</span> 'https://api.noticast.io/send_message',
-    <span red>method:</span> 'POST',
-    <span red>headers:</span> {
-      <span green>'x-api-key':</span> <span blue>'&ltDevice/Group ARN&gt'</span>
-    },
-    <span red>body:</span> {
-      <span green>'message':</span> 'An example of a test message. This will be read aloud.',
-      <span green>'target':</span> <span blue>'&ltDevice/Group ARN&gt'</span>
-    },
-    <span red>json:</span> true
-  }, 
-  <span blue>function</span> (err, res, body) {
-    if(<span red>err</span>) {
-      throw <span red>err</span>
-    }
-    else {
-      <span green>console</span>.<span blue>log</span>("Status Code: " + <span red>res</span>.<span blue>statusCode</span>)
-      <span green>console</span>.<span blue>log</span>(<span red>body</span>)
-   }
-})
+<span red>API_URL</span>=${<span green>API_URL</span>:-https://api.noticast.io/send_message}
+<span blue>send_message</span>() {
+  <span gray># First argument: Quoted message<span>
+  <span gray># Second argument: MiniARN</span>
+  <span blue>curl</span> -v --data-binary '{"message": "'"<span green>$1</span>"'",
+    "target": "'"<span green>$2</span>"'"}' <span red>$API_URL</span>
+}
+
+<span gray># Example usage</span>
+send_message
 </code></pre>
-</div>
+    </div>
     <!-- {{ '}}}' }} -->
   </div>
 </div>
