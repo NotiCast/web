@@ -7,7 +7,7 @@ import gigaspoon as gs
 from flask import (Blueprint, g, request, send_file)
 from .auth import login_required, admin_required
 from .iot_util import get_things, Thing
-from .models import Device, db
+from .models import IntegrityError, Device, db
 from .app_view import AppRouteView, response
 
 blueprint = Blueprint("device", __name__, url_prefix="/device")
@@ -76,11 +76,15 @@ class Register(AppRouteView):
         name = values["device_name"]
         thing = Thing("", uuid.uuid4().hex)
         thing.sync(create=True)
-        device = Device(arn=thing.arn,
-                        client_id=g.user.client_id,
-                        name=name)
-        db.session.add(device)
-        db.session.commit()
+        try:
+            device = Device(arn=thing.arn,
+                            client_id=g.user.client_id,
+                            name=name)
+            db.session.add(device)
+            db.session.commit()
+        except IntegrityError as e:
+            return response("Device creation failed: %r" % e,
+                            category="danger")
 
         return response("Device successfully created: %s" % name,
                         payload={"name": name, "arn": thing.arn})
